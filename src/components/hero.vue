@@ -9,6 +9,7 @@
         | Сайт авиамоделистов Одинцово!
     .info__row
       button(type="button").start Поехали
+    .background
 </template>
 
 <script>
@@ -54,6 +55,32 @@ export default {}
 
   &:hover {
     background-color: #ef8376;
+  }
+}
+
+.background {
+  background: url("../assets/images/yak54.jpg") center center no-repeat;
+  background-size: cover;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -2;
+  will-change: transform;
+
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: block;
+    background: url("../assets/images/yak54.jpg") center center no-repeat;
+    background-size: cover;
+    filter: blur(5px);
+    will-change: transform;
   }
 }
 </style>

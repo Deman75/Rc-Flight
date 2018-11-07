@@ -1,16 +1,46 @@
 <template lang="pug">
-  div.home
+div.home
+  section.hero
     Hero
+  title-section(
+    :titleData="titleData"
+    )
+  slider
+  info
 </template>
 
 <script>
-// @ is an alias to /src
 import Hero from "@/components/hero.vue"
+import titleSection from "@/components/title-section.vue"
+import slider from "@/components/slider.vue"
+import info from "@/components/info.vue"
 
 export default {
   name: "home",
   components: {
-    Hero
+    Hero,
+    titleSection,
+    slider,
+    info
+  },
+  data() {
+    return {
+      titleData: {
+        title: "Так мы летаем!",
+        text: "Летаем круглогодично. Здесь мы собрали немного фотографий с полетов."
+      }
+    }
   }
 };
 </script>
+
+<style lang="scss">
+.hero {
+  min-height: 650px;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
