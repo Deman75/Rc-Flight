@@ -78,14 +78,25 @@ h1,h2,h3,h4 {
   align-items: center;
 }
 .background {
-  background: url("./assets/images/header.jpg") center center no-repeat;
+  background: url("./assets/images/yak54.jpg") center center no-repeat;
   background-size: cover;
   position: fixed;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: -1;
+  z-index: -2;
+
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: block;
+    background-color: rgba(24, 36, 130, .5);
+  }
 }
 .nav {
   position: absolute;
