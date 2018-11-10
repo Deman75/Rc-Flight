@@ -69,7 +69,11 @@ article, img {
   color: #2c3e50;
   font-weight: 400;
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
 </style>

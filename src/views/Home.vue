@@ -42,5 +42,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @include tablet {
+    min-height: auto;
+  }
 }
 </style>

@@ -3,33 +3,33 @@
   var slides = [
     {
       "image": "../assets/images/slider/pic01.jpg",
-      "title": "Полет одного из пилотов",
-      "desc" : "Пролет на не большой высоте и на малой скорости"
+      "title": "Предполетная подготовка",
+      "desc" : "Модель только что собрали. Скоро в полет!"
     },
     {
-      "image": "../assets/images/slider/pic02.jpg",
-      "title": "Недавние полеты",
-      "desc" : "Пролет на не большой высоте и на малой скорости"
+      "image": "../assets/images/slider/pic07.jpg",
+      "title": "Модель с ФПВ",
+      "desc" : "С ФПВ можно мочувствовать себя настоящим пилотом!"
     },
     {
       "image": "../assets/images/slider/pic03.jpg",
-      "title": "Полет одного из пилотов",
-      "desc" : "Пролет на не большой высоте и на малой скорости"
+      "title": "Сразу после полета",
+      "desc" : "Фонарь снять для замены аккумуляторной батареи."
     },
     {
       "image": "../assets/images/slider/pic04.jpg",
-      "title": "Полет одного из пилотов",
-      "desc" : "Пролет на не большой высоте и на малой скорости"
+      "title": "Старотовая площадка",
+      "desc" : "Пока приходится вот так ютиться с краю дороги"
     },
     {
       "image": "../assets/images/slider/pic05.jpg",
-      "title": "Полет одного из пилотов",
-      "desc" : "Пролет на не большой высоте и на малой скорости"
+      "title": "Наши модели",
+      "desc" : "Модели после полетов"
     },
     {
-      "image": "../assets/images/slider/pic01.jpg",
-      "title": "Полет одного из пилотов",
-      "desc" : "Пролет на не большой высоте и на малой скорости"
+      "image": "../assets/images/slider/pic06.jpg",
+      "title": "Наши модели",
+      "desc" : "Модели после полетов"
     },
     {
       "image": "../assets/images/slider/pic02.jpg",
@@ -46,14 +46,53 @@ section.slider
         .slider__desc
           h3.slider__title=slide.title
           article.slider__text=slide.desc
-  button(type="button").slider__back
+  button(
+    type="button"
+    @click="prevBtn"
+    ).slider__prev
     .arrow
-  button(type="button").slider__forw
-    .arrow.arrow_forw
+  button(
+    type="button"
+    @click="nextBtn"
+    ).slider__next
+    .arrow.arrow_next
 </template>
 
 <script>
 export default {
+  data: () => {
+    return {
+      transformActualPosition: 0
+    }
+  },
+  methods: {
+    nextBtn: function () {
+      const slider = document.querySelector('.slider__list');
+      const items = document.querySelectorAll('.slider__item');
+      const width = items[0].offsetWidth;
+      const marginRight = parseInt(getComputedStyle(items[0]).getPropertyValue('margin-right').match(/\d+/)[0]);
+      const sliderWidth = (width + marginRight) * items.length - slider.offsetWidth + marginRight;
+      this.transformActualPosition += width + marginRight;
+      if (this.transformActualPosition > sliderWidth) {
+        this.transformActualPosition = sliderWidth;
+      }
+      console.log(sliderWidth + ' ' + width);
+      slider.style=`transform: translateX(-${this.transformActualPosition}px)`;
+    },
+    prevBtn: function () {
+      const slider = document.querySelector('.slider__list');
+      const item = document.querySelector('.slider__item');
+      const width = item.offsetWidth;
+      const sliderWidth = slider.offsetWidth;
+      let marginRight = marginRight = parseInt(getComputedStyle(item).getPropertyValue('margin-right').match(/\d+/)[0]);
+      this.transformActualPosition -= width + marginRight;
+      if (this.transformActualPosition < 0) {
+        this.transformActualPosition = 0;
+      }
+
+      slider.style=`transform: translateX(-${this.transformActualPosition}px)`;
+    },
+  }
 }
 </script>
 
@@ -65,16 +104,10 @@ export default {
 }
 .slider__list {
   padding: 20px 0;
-  width: 100%;
   display: flex;
   flex-wrap: nowrap;
-  overflow: hidden;
-
-  &:hover {
-    .slider__item {
-      transform: translateX(-300%);
-    }
-  }
+  transform: translateX(0%);
+  transition: transform .5s;
 }
 .slider__item {
   display: inline-block;
@@ -83,14 +116,22 @@ export default {
   height: 460px;
   margin-right: 20px;
   background-color: #fff;
-  overflow: hidden;
   text-align: center;
-  transform: translateX(0%);
   will-change: transform;
   transition: transform 1.5s;
 
   &:first-child {
     margin-left: 20px;
+  }
+
+  @include phone {
+    width: 100vw;
+    min-width: 100vw;
+    margin-right: 0;
+
+    &:first-child {
+      margin-left: 0;
+    }
   }
 }
 .slider__img {
@@ -113,7 +154,7 @@ export default {
   font-size: 23px;
   margin: 20px 0;
 }
-.slider__back, .slider__forw {
+.slider__prev, .slider__next {
   display: flex;
   justify-content: flex-end;
   position: absolute;
@@ -131,8 +172,13 @@ export default {
   &:hover {
     background-color: rgba(239, 131, 118, 0.75);
   }
+
+  @include phone {
+    width: 70px;
+    height: 70px;
+  }
 }
-.slider__forw {
+.slider__next {
   left: 100%;
   justify-content: flex-start;
   transform: translateY(-50%) translateX(-50%);
@@ -144,8 +190,13 @@ export default {
   border-top: 2px solid #fff;
   border-left: 2px solid #fff;
   transform: rotate(-45deg);
+
+  @include phone {
+    width: 15px;
+    height: 15px;
+  }
 }
-.arrow_forw {
+.arrow_next {
   transform: rotate(135deg);
 }
 </style>

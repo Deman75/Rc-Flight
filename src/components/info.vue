@@ -1,7 +1,7 @@
 <template lang="pug">
 section.info
   .info__image
-    img(alt="" src="../assets/images/water.jpg").info__image-img
+    img(alt="" src="../assets/images/pic08.jpg").info__image-img
   title-section(
     :titleData="titleData"
   )
@@ -52,6 +52,10 @@ export default {
   padding-bottom: 20px;
   margin-top: -40px;
   text-indent: 20px;
+
+  @include phone {
+    margin-top: 10px;
+  }
 }
 .button {
   padding: 10px 20px;
