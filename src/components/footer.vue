@@ -38,7 +38,7 @@ export default {
 
 <style lang="scss" scoped>
 .footer {
-  background-color: #2b252c;
+  background-color: rgba(43, 37, 44, .8);
   color: #fff;
   width: 100%;
   height: 200px;

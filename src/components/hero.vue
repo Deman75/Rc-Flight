@@ -10,7 +10,7 @@
     .info__row
       button(type="button").start Поехали
     .background
-      video(poster='../assets/images/yak54.jpg' autoplay playsinline muted loop).video
+      video(poster='../assets/images/bg.png' autoplay playsinline muted loop).video
         source(type='video/webm', src='../assets/video/rc-flight.webm')
         source(type='video/mp4', src='../assets/video/rc-flight.mp4')
 </template>
