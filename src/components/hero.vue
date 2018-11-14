@@ -1,6 +1,8 @@
 <template lang="pug">
   .info
     .info__row
+      .title__icon
+        extra300
       h1.title Rc-Flight
     .info__row
       .line
@@ -8,7 +10,7 @@
       span.info__desc
         | Сайт авиамоделистов Одинцово!
     .info__row
-      button(type="button").start Поехали
+      button(type="button").start
     .background
       video(poster='../assets/images/bg.png' autoplay playsinline muted loop).video
         source(type='video/webm', src='../assets/video/rc-flight.webm')
@@ -16,7 +18,14 @@
 </template>
 
 <script>
+import logo from "./icons/logo.vue";
+import extra300 from "./icons/extra300.vue";
+//
 export default {
+  components: {
+    logo,
+    extra300
+  },
   data: () => {
     return {
       width: 0,
@@ -74,6 +83,7 @@ export default {
   flex-direction: column;
   width: 400px;
   color: #fff;
+  position: relative;
 
   @include phone {
     width: 95%;
@@ -91,10 +101,27 @@ export default {
     margin: 10px 0;
   }
 }
+.title__icon {
+  position: absolute;
+  z-index: -1;
+  top: -50px;
+  left: 50%;
+  width: 300px;
+  height: 150px;
+  fill: #4ca764;
+  color: #df7466;
+  transform: rotate(180deg) translateX(50%);
+
+  &:hover {
+    fill: #4A7D58;
+    color: #A76B63;
+  }
+}
 .title {
   color: #fff;
   font-weight: 400;
   font-size: 74px;
+  color: #fff;
 
   @include phone {
     font-size: 50px;
@@ -114,13 +141,30 @@ export default {
   height: 100px;
   border-radius: 50%;
   font-size: 23px;
-  background-color: #df7366;
+  background-color: rgba(0, 0, 0, .3);
   font-weight: 300;
   color: #fff;
   transition: background-color 0.3s;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid transparent;
+    border-right: 2px solid transparent;
+    transform: rotate(-135deg) translateX(65%);
+    transform-origin: center;
+  }
 
   &:hover {
-    background-color: #ef8376;
+    background-color: #df7366;
   }
 
   @include phone {
