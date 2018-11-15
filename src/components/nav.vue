@@ -178,7 +178,7 @@ export default {
   }
   .hamburger__icon-top {
     transform: translateY(45%) rotate(45deg);
-    transform-origin: top
+    transform-origin: top;
   }
   .hamburger__icon-bottom {
     transform: translateY(-45%) rotate(-45deg);

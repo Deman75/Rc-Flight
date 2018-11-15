@@ -67,11 +67,45 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+g {
+  transition: transform .3s;
+}
 .icon {
   width: 100%;
   height: 100%;
   fill: inherit;
   transition: fill .3s, color .3s;
+  overflow: overlay;
+
+  &:hover {
+    #wingL__wing, #wingL__ending, #stabL__wing, #stabL__endings {
+      transform: translate(-20px, 10px);
+    }
+    #wingL__el, , #stabL__el {
+      transform: translate(-30px, 5px);
+    }
+    #wingR__wing, #stabR__wing {
+      transform: translate(20px, -10px);
+    }
+    #wingR__el, #stabR__el {
+      transform: translate(10px, -15px);
+    }
+    #eng {
+      transform: translate(20px, 20px);
+    }
+    #prop {
+      transform: translate(10px, 10px);
+    }
+    #cockpit {
+      transform: translate(5px, -10px);
+    }
+    #fairing {
+      transform: translate(-5px, -15px);
+    }
+    #rudder__rudRotate, #rudder__ending {
+      transform: translate(-5px, -15px);
+    }
+  }
 }
 .cls-1 {
   fill: none;
