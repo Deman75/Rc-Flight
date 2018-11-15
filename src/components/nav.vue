@@ -63,6 +63,10 @@ export default {
     position: fixed;
     top: 0;
   }
+
+  @include phoneLand {
+    padding: 0;
+  }
 }
 .heder-line {
   display: inline;
@@ -93,10 +97,19 @@ export default {
     height: 0;
     margin: 0 28px;
   }
+
+  @include phoneLand {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
 }
 .nav__list_active {
   @include tablet {
     height: 300px;
+  }
+  @include phoneLand {
+    height: 80vh;
   }
 }
 .nav__item {
@@ -110,6 +123,10 @@ export default {
 
   @include tablet {
     margin: 10px 0;
+  }
+
+  @include phoneLand {
+    margin: 3px 0;
   }
 }
 .nav__link {

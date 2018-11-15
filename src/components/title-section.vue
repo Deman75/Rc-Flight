@@ -24,12 +24,20 @@ export default {
   @include phone {
     padding: 10px 0;
   }
+
+  @include phoneLand {
+    padding: 0;
+  }
 }
 .subtitle {
   font-size: 53px;
 
   @include phone {
     font-size: 35px;
+  }
+
+  @include phoneLand {
+    font-size: 30px;
   }
 }
 .desc {
@@ -42,6 +50,10 @@ export default {
     padding: 0 10px;
     font-size: 20px;
     margin-top: 15px;
+  }
+
+  @include phoneLand {
+    font-size: 20px;
   }
 }
 </style>

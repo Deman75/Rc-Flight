@@ -18,3 +18,9 @@
     @content;
   }
 }
+
+@mixin phoneLand{
+  @media screen and (orientation: landscape) and (max-width: 568px){
+    @content;
+  }
+}

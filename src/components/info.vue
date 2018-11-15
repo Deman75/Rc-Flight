@@ -39,6 +39,10 @@ export default {
   margin: 0 auto;
   max-height: 550px;
   overflow: hidden;
+
+  @include phoneLand {
+    max-height: 100vh;
+  }
 }
 .info__image-img {
   width: 100%;
@@ -55,6 +59,10 @@ export default {
 
   @include phone {
     margin-top: 10px;
+  }
+  @include phoneLand {
+    margin-top: 10px;
+    font-size: 16px;
   }
 }
 .button {

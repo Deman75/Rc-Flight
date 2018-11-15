@@ -110,7 +110,9 @@ export default {
   transition: transform .5s;
 }
 .slider__item {
-  display: inline-block;
+  // display: inline-block;
+  display: flex;
+  flex-direction: column;
   width: 330px;
   min-width: 330px;
   height: 460px;
@@ -119,6 +121,7 @@ export default {
   text-align: center;
   will-change: transform;
   transition: transform 1.5s;
+  position: relative;
 
   &:first-child {
     margin-left: 20px;
@@ -133,12 +136,21 @@ export default {
       margin-left: 0;
     }
   }
+
+  @include phoneLand {
+    height: 100vh;
+  }
 }
 .slider__img {
   width: 100%;
   height: 50%;
   max-height: 50%;
   overflow: hidden;
+
+  @include phoneLand {
+    height: 100%;
+    max-height: 100%;
+  }
 }
 .slider__img-img {
   width: 100%;
@@ -149,10 +161,34 @@ export default {
   align-items: center;
   flex-direction: column;
   height: 50%;
+
+  @include phoneLand {
+    position: absolute;
+    height: auto;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    right: 0;
+    justify-content: space-between;
+  }
 }
 .slider__title {
   font-size: 23px;
   margin: 20px 0;
+
+  @include phoneLand {
+    color: #fff;
+    margin: 0;
+    padding: 10px 10px;
+    background-color: rgba(0, 0, 0, .5);
+  }
+}
+.slider__text {
+  @include phoneLand {
+    color: #fff;
+    padding: 10px 10px;
+    background-color: rgba(0, 0, 0, .5);
+  }
 }
 .slider__prev, .slider__next {
   display: flex;

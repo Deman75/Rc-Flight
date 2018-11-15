@@ -28,7 +28,55 @@ export default {
       titleData: {
         title: "Так мы летаем!",
         text: "Летаем круглогодично. Здесь мы собрали немного фотографий с полетов."
+      },
+      width: 0,
+      height: 0
+    }
+  },
+  created() {
+    window.addEventListener("resize", this.resize);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.resize);
+  },
+  mounted() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    const hero = document.querySelector('.hero');
+    hero.style.height=`${this.height}px`;
+  },
+  methods: {
+    resize (e) {
+      this.height = e.currentTarget.innerHeight;
+      this.changeSize();
+    },
+    changeSize () {
+      const hero = document.querySelector('.hero');
+
+      const startTime = Date.now()
+      const duration = 800
+      const height = hero.offsetHeight
+      const need = this.height - height
+
+      const anim = () => {
+        let progress = (Date.now() - startTime)/duration
+
+        if (progress > 1) {
+          progress = 1
+        }
+        progress = Math.sin(Math.acos(progress**1.4 - 1));
+
+        hero.style.height = (need * progress) + height + 'px'
+
+
+        if (progress == 1) {
+          return
+        }
+
+        requestAnimationFrame(anim)
       }
+
+      anim()
     }
   }
 };
@@ -36,7 +84,7 @@ export default {
 
 <style lang="scss">
 .hero {
-  min-height: 650px;
+  min-height: 400px;
   height: 100vh;
   position: relative;
   display: flex;
@@ -46,5 +94,6 @@ export default {
   @include tablet {
     min-height: auto;
   }
+
 }
 </style>
