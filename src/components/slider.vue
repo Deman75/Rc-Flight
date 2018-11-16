@@ -1,51 +1,18 @@
 <template lang="pug">
--
-  var slides = [
-    {
-      "image": "../assets/images/slider/pic01.jpg",
-      "title": "Предполетная подготовка",
-      "desc" : "Модель только что собрали. Скоро в полет!"
-    },
-    {
-      "image": "../assets/images/slider/pic07.jpg",
-      "title": "Модель с ФПВ",
-      "desc" : "С ФПВ можно мочувствовать себя настоящим пилотом!"
-    },
-    {
-      "image": "../assets/images/slider/pic03.jpg",
-      "title": "Сразу после полета",
-      "desc" : "Фонарь снять для замены аккумуляторной батареи."
-    },
-    {
-      "image": "../assets/images/slider/pic04.jpg",
-      "title": "Старотовая площадка",
-      "desc" : "Пока приходится вот так ютиться с краю дороги"
-    },
-    {
-      "image": "../assets/images/slider/pic05.jpg",
-      "title": "Наши модели",
-      "desc" : "Модели после полетов"
-    },
-    {
-      "image": "../assets/images/slider/pic06.jpg",
-      "title": "Наши модели",
-      "desc" : "Модели после полетов"
-    },
-    {
-      "image": "../assets/images/slider/pic02.jpg",
-      "title": "Полет одного из пилотов",
-      "desc" : "Пролет на не большой высоте и на малой скорости"
-    }
-  ]
 section.slider
   ul.slider__list
-    each slide in slides
-      li.slider__item
-        button(type="button").slider__img
-          img(alt="" src=`${slide.image}`).slider__img-img
-        .slider__desc
-          h3.slider__title=slide.title
-          article.slider__text=slide.desc
+    li(
+      v-for="slide in slides"
+      :key="slide.id"
+      ).slider__item
+      button(type="button").slider__img
+        img(
+          :alt="slide.title"
+          :src="slide.image"
+        ).slider__img-img
+      .slider__desc
+        h3.slider__title {{slide.title}}
+        article.slider__text {{slide.desc}}
   button(
     type="button"
     @click="prevBtn"
@@ -59,10 +26,13 @@ section.slider
 </template>
 
 <script>
+import slides from '../data/galery.json';
+
 export default {
   data: () => {
     return {
-      transformActualPosition: 0
+      transformActualPosition: 0,
+      slides
     }
   },
   methods: {

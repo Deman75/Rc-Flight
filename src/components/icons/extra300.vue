@@ -63,6 +63,11 @@ svg(
 
 <script>
 export default {
+  methods: {
+    parentClick: () => {
+      console.log('parentClick');
+    }
+  }
 }
 </script>
 

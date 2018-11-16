@@ -1,7 +1,9 @@
 <template lang="pug">
 div.home
   section.hero
-    Hero
+    Hero(
+      :play-video="playVideo"
+      )
   title-section(
     :titleData="titleData"
     )
@@ -30,7 +32,9 @@ export default {
         text: "Летаем круглогодично. Здесь мы собрали немного фотографий с полетов."
       },
       width: 0,
-      height: 0
+      height: 0,
+      dateLastActive: 0,
+      playVideo: true
     }
   },
   created() {
@@ -44,6 +48,10 @@ export default {
     this.height = window.innerHeight;
     const hero = document.querySelector('.hero');
     hero.style.height=`${this.height}px`;
+
+    document.addEventListener("mousemove", this.mousemove);
+    document.addEventListener("scroll", this.mousemove);
+    setInterval(this.checkBrowserActive, 2000);
   },
   methods: {
     resize (e) {
@@ -54,7 +62,7 @@ export default {
       const hero = document.querySelector('.hero');
 
       const startTime = Date.now()
-      const duration = 800
+      const duration = 300
       const height = hero.offsetHeight
       const need = this.height - height
 
@@ -77,6 +85,20 @@ export default {
       }
 
       anim()
+    },
+    mousemove () {
+      this.dateLastActive = Date.now();
+      console.log('acteve');
+      this.playVideo = true;
+    },
+    checkBrowserActive () {
+      // if ( Date.now() - this.dateLastActive > 4000) {
+      //   console.log('sleep');
+      // }
+      if (document.hidden) {
+        console.log('sleep');
+        this.playVideo = false;
+      }
     }
   }
 };

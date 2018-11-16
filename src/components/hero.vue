@@ -34,6 +34,12 @@ export default {
       height: 0
     }
   },
+  props: {
+    playVideo: {
+      type: Boolean,
+      default: false
+    }
+  },
   created() {
     window.addEventListener("resize", this.resize);
   },
@@ -44,6 +50,8 @@ export default {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.videoSizeInit();
+
+    setTimeout(this.checkVideoPlay, 1000)
   },
   methods: {
     resize(e) {
@@ -62,7 +70,7 @@ export default {
         video.style.top = '';
 
         const startTime = Date.now()
-        const duration = 800
+        const duration = 200
         const value = video.offsetWidth
         const need = (this.height * aspectRatio) - value
         let left = 0;
@@ -86,7 +94,7 @@ export default {
         video.style.width ='';
         video.style.left = '';
         const startTime = Date.now()
-        const duration = 800
+        const duration = 200
         const value = video.offsetHeight
         const need = (this.width / aspectRatio) - value
         let top = 0;
@@ -114,17 +122,21 @@ export default {
       const aspectRatio = 1.7777777778; // aspect Ratio 16/9 width/height
 
       if (this.width / this.height < aspectRatio) {
+
         let videoWidth = this.height * aspectRatio;
         let left = (videoWidth/2) - (this.width / 2); // считаем смещение влево.
         video.style.width = `${videoWidth}px`;
         video.style.left = `-${left}px`;
         video.style.height ='';
         video.style.top = '';
+
       } else if (this.width / this.height > aspectRatio) {
+
         let videoHeight = this.width / aspectRatio;
         let top = (videoHeight/2) - (this.height / 2);
         video.style.width ='';
         video.style.left = '';
+
       }
     },
     arrowDown () {
@@ -151,6 +163,16 @@ export default {
       };
 
       scrollDown();
+    },
+    checkVideoPlay () {
+      const video = document.querySelector('.video');
+      if ( this.playVidio ) {
+        video.pause();
+        console.log('pause');
+      } else {
+        video.play();
+        console.log('play');
+      }
     }
   }
 };
