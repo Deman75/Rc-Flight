@@ -7,6 +7,7 @@ svg(
   y='0px'
   viewBox="0 0 256.88 172.67"
   xml:space='preserve'
+  :class="{'icon_hover' : hover}"
   ).icon
   g#fuse
     path.cls-2(d='M142.53,123.48l-.35.14h0a112.24,112.24,0,0,0,21.34,16.66c4,2.36,7.72,4.36,12.64,4.41,4.71.05,8.9-1.3,13.22-2.76l.16-.06c-.51-.34-1-.7-1.49-1.08l0,0a34.81,34.81,0,0,1-4,1.38,11,11,0,0,1-2.9.47,2.86,2.86,0,0,1-1.86-.45,2,2,0,0,1-.63-1.33,4.48,4.48,0,0,1,.92-2.8,17.18,17.18,0,0,1,2.81-3.19,42.8,42.8,0,0,1,5.29-4.08,34.76,34.76,0,0,1,5.15-2.91,27.66,27.66,0,0,1,3.36-1.34,23.38,23.38,0,0,1,3.37-.84,17.14,17.14,0,0,1,2.69-.26h.2a3.93,3.93,0,0,1,1.93.38l0,0a2.33,2.33,0,0,1,.46.37l-.4-.46c-1.81-2.13-3.24-4.51-5-6.69a65.44,65.44,0,0,0-5.63-6.14,129,129,0,0,0-12.8-10.67c-2.23-1.66-4.48-3.3-6.77-4.87s-4.71-2.93-7.06-4.42c-4.69-3-9.36-6-14.06-9a18.14,18.14,0,0,1,1.31,2.15l0,.11c.67,1.57-.88,2.4-2,3a38.63,38.63,0,0,1-3.7,1.56A28.77,28.77,0,0,1,139,93.34a16.63,16.63,0,0,1-5.83-.71A16.38,16.38,0,0,1,130,91.22c-1.07-.62-2.09-1.34-3.13-2-1.3-.85-2.63-1.62-3.93-2.48-1-.65-1.94-1.35-2.89-2l-2.81-2c-1.76-1.29-3.48-2.64-5.19-4-4.35-3.43-8.66-6.89-13-10.29-.69-.54-1.38-1.07-2-1.62-1.4-1.15-2.73-2.39-4-3.64-2.05-2-4.07-4-6.11-5.93-4.16-4-8.41-8-12.57-12l-6.39,1.28c6.92,6.84,13.54,14,20.21,21s13.35,14.14,20.08,21.16l.35-.21c6,5.41,12.15,10.63,18.14,16,3.93,3.54,13.48,13.06,15.74,18.26a1.09,1.09,0,0,1,.16.4C142.57,123.21,142.76,123.39,142.53,123.48Z', transform='translate(0.13 0.13)')
@@ -67,6 +68,12 @@ export default {
     parentClick: () => {
       console.log('parentClick');
     }
+  },
+  props: {
+    hover: {
+      type: Boolean,
+      default: false
+    }
   }
 }
 </script>
@@ -82,34 +89,64 @@ g {
   transition: fill .3s, color .3s;
   overflow: overlay;
 
-  &:hover {
-    #wingL__wing, #wingL__ending, #stabL__wing, #stabL__endings {
-      transform: translate(-20px, 10px);
-    }
-    #wingL__el, , #stabL__el {
-      transform: translate(-30px, 5px);
-    }
-    #wingR__wing, #stabR__wing {
-      transform: translate(20px, -10px);
-    }
-    #wingR__el, #stabR__el {
-      transform: translate(10px, -15px);
-    }
-    #eng {
-      transform: translate(20px, 20px);
-    }
-    #prop {
-      transform: translate(10px, 10px);
-    }
-    #cockpit {
-      transform: translate(5px, -10px);
-    }
-    #fairing {
-      transform: translate(-5px, -15px);
-    }
-    #rudder__rudRotate, #rudder__ending {
-      transform: translate(-5px, -15px);
-    }
+  // &:hover {
+  //   #wingL__wing, #wingL__ending, #stabL__wing, #stabL__endings {
+  //     transform: translate(-20px, 10px);
+  //   }
+  //   #wingL__el, , #stabL__el {
+  //     transform: translate(-30px, 5px);
+  //   }
+  //   #wingR__wing, #stabR__wing {
+  //     transform: translate(20px, -10px);
+  //   }
+  //   #wingR__el, #stabR__el {
+  //     transform: translate(10px, -15px);
+  //   }
+  //   #eng {
+  //     transform: translate(20px, 20px);
+  //   }
+  //   #prop {
+  //     transform: translate(10px, 10px);
+  //   }
+  //   #cockpit {
+  //     transform: translate(5px, -10px);
+  //   }
+  //   #fairing {
+  //     transform: translate(-5px, -15px);
+  //   }
+  //   #rudder__rudRotate, #rudder__ending {
+  //     transform: translate(-5px, -15px);
+  //   }
+  // }
+}
+
+.icon_hover {
+  #wingL__wing, #wingL__ending, #stabL__wing, #stabL__endings {
+    transform: translate(-20px, 10px);
+  }
+  #wingL__el, , #stabL__el {
+    transform: translate(-30px, 5px);
+  }
+  #wingR__wing, #stabR__wing {
+    transform: translate(20px, -10px);
+  }
+  #wingR__el, #stabR__el {
+    transform: translate(10px, -15px);
+  }
+  #eng {
+    transform: translate(20px, 20px);
+  }
+  #prop {
+    transform: translate(10px, 10px);
+  }
+  #cockpit {
+    transform: translate(5px, -10px);
+  }
+  #fairing {
+    transform: translate(-5px, -15px);
+  }
+  #rudder__rudRotate, #rudder__ending {
+    transform: translate(-5px, -15px);
   }
 }
 .cls-1 {

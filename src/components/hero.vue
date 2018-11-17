@@ -1,8 +1,13 @@
 <template lang="pug">
   .info
-    .info__row
+    .info__row(
+      @mouseover="hover=true"
+      @mouseleave="hover=false"
+      )
       .title__icon
-        extra300
+        extra300(
+          :hover="hover"
+          )
       h1.title Rc-Flight
     .info__row
       .line
@@ -31,7 +36,8 @@ export default {
   data: () => {
     return {
       width: 0,
-      height: 0
+      height: 0,
+      hover: false
     }
   },
   props: {
@@ -51,7 +57,7 @@ export default {
     this.height = window.innerHeight;
     this.videoSizeInit();
 
-    setTimeout(this.checkVideoPlay, 1000)
+    //setInterval(this.checkVideoPlay, 1000)
   },
   methods: {
     resize(e) {
@@ -59,7 +65,7 @@ export default {
       this.height = e.currentTarget.innerHeight;
       setTimeout(() => {
         this.changeSize();
-      },400);
+      },40);
     },
     changeSize () { // smooth animation on change size background video
       const video = document.querySelector('.video');
@@ -173,6 +179,11 @@ export default {
         video.play();
         console.log('play');
       }
+    }
+  },
+  watch:{
+    'playVidio'(newVal, oldVal){
+      console.log(newVal);
     }
   }
 };

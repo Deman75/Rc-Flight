@@ -87,8 +87,11 @@ export default {
       anim()
     },
     mousemove () {
+      if (document.hidden) {
+        return
+      }
       this.dateLastActive = Date.now();
-      console.log('acteve');
+      // console.log('acteve');
       this.playVideo = true;
     },
     checkBrowserActive () {
@@ -96,7 +99,7 @@ export default {
       //   console.log('sleep');
       // }
       if (document.hidden) {
-        console.log('sleep');
+        // console.log('sleep');
         this.playVideo = false;
       }
     }
