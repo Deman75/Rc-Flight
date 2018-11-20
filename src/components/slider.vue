@@ -5,7 +5,10 @@ section.slider
       v-for="slide in slides"
       :key="slide.id"
       ).slider__item
-      button(type="button").slider__img
+      button(
+        type="button"
+        @click="showSlideShow = true, slideshowId = slide.id"
+        ).slider__img
         img(
           :alt="slide.title"
           :src="slide.image"
@@ -23,16 +26,27 @@ section.slider
     @click="nextBtn"
     ).slider__next
     .arrow.arrow_next
+  slideshow(
+    v-if="showSlideShow"
+    @close="showSlideShow = false"
+    :id="slideshowId"
+    )
 </template>
 
 <script>
 import slides from '../data/galery.json';
+import slideshow from './slideshow.vue';
 
 export default {
+  components: {
+    slideshow
+  },
   data: () => {
     return {
       transformActualPosition: 0,
-      slides
+      slides,
+      showSlideShow: false,
+      slideshowId: 0,
     }
   },
   methods: {
@@ -46,7 +60,6 @@ export default {
       if (this.transformActualPosition > sliderWidth) {
         this.transformActualPosition = sliderWidth;
       }
-      console.log(sliderWidth + ' ' + width);
       slider.style=`transform: translateX(-${this.transformActualPosition}px)`;
     },
     prevBtn: function () {
