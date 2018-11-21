@@ -3,11 +3,17 @@
     v-on:scroll.prevent="onScroll"
     )
     .image
-      img(
-        v-if="slideshow[id] !== undefined"
-        alt="slideshow[id][slide].title"
-        :src="slideshow[id][slide].image"
-      ).image__img
+      ul.image__list
+        li(
+          v-if="slideshow[id] !== undefined"
+          v-for="slide in slideshow[id]"
+          :key="slide.image"
+        ).image__item
+          img(
+            alt="slide.title"
+            :src="slide.image"
+            :class="{'image__img_width' : animFlag}"
+          ).image__img
       button(
           type="button"
           @click="prevSlide"
@@ -29,7 +35,9 @@ export default {
   data: () => {
     return {
       slideshow,
-      slide: 0
+      animFlag: false,
+      actualSlide: 0,
+      timer: 0
     }
   },
   props: {
@@ -39,10 +47,15 @@ export default {
     }
   },
   created() {
-    if (this.slideshow[this.id] === undefined) this.$emit('close');
+    if (this.slideshow[this.id] === undefined) {
+      this.$emit('close');
+    };
+    window.addEventListener('scroll', function(e) {
+      e.preventDefault();
+    });
   },
   mounted() {
-    this.fixedScroll(true)
+    this.fixedScroll(true);
   },
   destroyed() {
     this.fixedScroll(false)
@@ -56,21 +69,50 @@ export default {
         body.style.overflow='';
       }
     },
+    scroll(e) {
+      console.log(e);
+    },
     nextSlide() {
       const slideCount = this.slideshow[this.id].length;
+      const imageList = document.querySelector('.image__list');
 
-      this.slide++;
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.animFlag = false;
+      }, 900);
 
-      if (this.slide === slideCount) this.slide = 0;
+      if (this.actualSlide + 1 < slideCount) {
+        this.actualSlide++;
+        this.animFlag = true;
+      } else {
+        clearTimeout(this.timer)
+        this.animFlag = false;
+      }
+
+      setTimeout(() => {
+        imageList.style=`transform: translateX(-${this.actualSlide * 100}%)`;
+      }, 100);
 
     },
     prevSlide() {
-      const slideCount = this.slideshow[this.id].length;
+      const imageList = document.querySelector('.image__list');
 
-      this.slide--;
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.animFlag = false;
+      }, 900);
 
-      if (this.slide < 0) this.slide = slideCount - 1;
+      if (this.actualSlide - 1 >= 0) {
+        this.actualSlide--;
+        this.animFlag = true;
+      } else {
+        clearTimeout(this.timer)
+        this.animFlag = false;
+      }
 
+      setTimeout(() => {
+        imageList.style=`transform: translateX(-${this.actualSlide * 100}%)`;
+      }, 100);
     }
   }
 }
@@ -93,11 +135,33 @@ export default {
 .image {
   width: 100%;
   height: 100%;
+}
+.image__list {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 1s;
+  transform: translateX(0);
+  will-change: auto;
+}
+.image__item {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
+.image__img {
+  width: 100%;
+  transition: width .5s;
+  will-change: auto;
+}
+.image__img_width {
+  width: 90%;
+}
+
 .next, .prev {
   position: absolute;
   top: 0;
@@ -107,19 +171,16 @@ export default {
   transition: background-color .3s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, .4);
+    background-color: rgba(0, 0, 0, .3);
   }
 }
 .prev {
   left: 0;
-  border-radius: 0 50% 50% 0;
+  border-radius: 0 30% 30% 0;
 }
 .next {
   right: 0;
-  border-radius: 50% 0 0 50%;
-}
-.image__img {
-  width: 100%;
+  border-radius: 30% 0 0 30%;
 }
 .exit {
   position: absolute;
@@ -130,6 +191,7 @@ export default {
   padding: 10px;
   margin: 5px;
   z-index: 200;
+  border-radius: 50%;
   box-sizing: border-box;
   cursor: pointer;
   background-color: rgba(0, 0, 0, .8);
@@ -147,11 +209,11 @@ export default {
   }
   &::after {
     right: 0;
-    transform: rotate(45deg) translateY(50%) translateX(-15%);
+    transform: rotate(45deg) translateY(200%) translateX(-15%);
   }
   &::before {
     left: 0;
-    transform: rotate(-45deg) translateY(200%) translateX(25%);
+    transform: rotate(-45deg) translateY(200%) translateX(15%);
   }
   &:hover {
     &::after, &::before {
