@@ -1,9 +1,16 @@
 <template lang="pug">
   .wrapper(
-    v-on:scroll.prevent="onScroll"
+    @mouseleave="mouseOverFunc"
+    @touchmove.prevent
     )
     .image
-      ul.image__list
+      ul(
+        @mousewheel.prevent="scroll"
+        @mousemove="mousemove"
+        @mousedown="mouseDownFunc"
+        @mouseup="mouseUpFunc"
+        :class="{'image__list_transition' : !mouseDown}"
+      ).image__list#image__list
         li(
           v-if="slideshow[id] !== undefined"
           v-for="slide in slideshow[id]"
@@ -17,10 +24,12 @@
       button(
           type="button"
           @click="prevSlide"
+          :class="{'display_none' : mouseDown}"
         ).prev
       button(
           type="button"
           @click="nextSlide"
+          :class="{'display_none' : mouseDown}"
         ).next
     .exit(
       @click="$emit('close')"
@@ -37,7 +46,13 @@ export default {
       slideshow,
       animFlag: false,
       actualSlide: 0,
-      timer: 0
+      timer: 0,
+      mouseDown: false,
+      mousePosX: 0,
+      mouseStartX: 0,
+      mousePosY: 0,
+      mouseDirect: 0,
+      slideScroll: 0,
     }
   },
   props: {
@@ -50,29 +65,69 @@ export default {
     if (this.slideshow[this.id] === undefined) {
       this.$emit('close');
     };
-    window.addEventListener('scroll', function(e) {
-      e.preventDefault();
-    });
   },
   mounted() {
-    this.fixedScroll(true);
+
   },
   destroyed() {
-    this.fixedScroll(false)
+
   },
   methods: {
-    fixedScroll(block) {
-      const body = document.querySelector('body');
-      if (block) {
-        body.style.overflow='hidden';
-      } else {
-        body.style.overflow='';
+    mouseDownFunc(e) {
+      e.preventDefault();
+      this.mouseDown = true;
+      this.slideScroll = this.actualSlide * 100;
+      this.mousePosX = e.clientX;
+      this.animFlag = true;
+    },
+    mousemove(e) {
+      if (this.mouseDown) {
+
+        e.preventDefault();
+
+        const imageList = document.querySelector('.image__list');
+        const sliderWidth = (this.slideshow[this.id].length - 1) * 100;
+
+        if (e.clientX > this.mousePosX) {  // move to left
+          if (this.mouseDirect !== 0) {
+            this.mouseDirect = 0;
+            console.log(this.mouseDirect);
+          }
+          this.mousePosX = e.clientX;
+          this.slideScroll -= 2;
+        } else if (e.clientX < this.mousePosX) {  // move to right
+          if (this.mouseDirect !== 1) {
+            this.mouseDirect = 1;
+            console.log(this.mouseDirect);
+          }
+          this.mousePosX = e.clientX;
+          this.slideScroll += 2;
+        }
+        if (this.slideScroll < 0) this.slideScroll = 0;
+        if (this.slideScroll > sliderWidth) this.slideScroll = sliderWidth;
+
+        imageList.style=`transform: translateX(-${this.slideScroll}%)`;
+      }
+    },
+    mouseUpFunc() {
+      const needSlide = Math.round((this.slideScroll)/100);
+      this.moveToSlide(needSlide);
+      this.mouseDown = false;
+    },
+    mouseOverFunc() {
+      if (this.mouseDown) {
+        this.mouseUpFunc();
       }
     },
     scroll(e) {
-      console.log(e);
+      if (e.deltaX > 5 && !this.animFlag) {
+        this.nextSlide();
+      }
+      if (e.deltaX < -5 && !this.animFlag) {
+        this.prevSlide();
+      }
     },
-    nextSlide() {
+    moveToSlide(numberSlide) {
       const slideCount = this.slideshow[this.id].length;
       const imageList = document.querySelector('.image__list');
 
@@ -81,38 +136,36 @@ export default {
         this.animFlag = false;
       }, 900);
 
-      if (this.actualSlide + 1 < slideCount) {
-        this.actualSlide++;
-        this.animFlag = true;
+      if (numberSlide > this.actualSlide) {
+
+        if (this.actualSlide + 1 < slideCount) {
+          this.actualSlide = numberSlide;
+          this.animFlag = true;
+        } else {
+          clearTimeout(this.timer)
+          this.animFlag = false;
+        }
+
       } else {
-        clearTimeout(this.timer)
-        this.animFlag = false;
+
+        if (this.actualSlide - 1 >= 0) {
+          this.actualSlide = numberSlide;
+          this.animFlag = true;
+        } else {
+          clearTimeout(this.timer)
+          this.animFlag = false;
+        }
       }
 
       setTimeout(() => {
         imageList.style=`transform: translateX(-${this.actualSlide * 100}%)`;
-      }, 100);
-
+      }, 1);
+    },
+    nextSlide() {
+      this.moveToSlide(this.actualSlide + 1);
     },
     prevSlide() {
-      const imageList = document.querySelector('.image__list');
-
-      clearTimeout(this.timer);
-      this.timer = setTimeout(() => {
-        this.animFlag = false;
-      }, 900);
-
-      if (this.actualSlide - 1 >= 0) {
-        this.actualSlide--;
-        this.animFlag = true;
-      } else {
-        clearTimeout(this.timer)
-        this.animFlag = false;
-      }
-
-      setTimeout(() => {
-        imageList.style=`transform: translateX(-${this.actualSlide * 100}%)`;
-      }, 100);
+      this.moveToSlide(this.actualSlide - 1);
     }
   }
 }
@@ -129,7 +182,7 @@ export default {
   z-index: 100;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, .8);
+  background-color: rgba(0, 0, 0, .95);
   overflow: hidden;
 }
 .image {
@@ -140,9 +193,11 @@ export default {
   display: flex;
   width: 100%;
   height: 100%;
-  transition: transform 1s;
   transform: translateX(0);
   will-change: auto;
+}
+.image__list_transition {
+  transition: transform 1s;
 }
 .image__item {
   display: flex;
@@ -154,18 +209,20 @@ export default {
   overflow: hidden;
 }
 .image__img {
-  width: 100%;
-  transition: width .5s;
+  max-width: 100%;
+  max-height: 100%;
+  transition: max-width .5s, max-height .5s;
   will-change: auto;
 }
 .image__img_width {
-  width: 90%;
+  max-width: 90%;
+  max-height: 90%;
 }
 
 .next, .prev {
   position: absolute;
   top: 0;
-  width: 20%;
+  width: 15%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0);
   transition: background-color .3s;
@@ -176,11 +233,14 @@ export default {
 }
 .prev {
   left: 0;
-  border-radius: 0 30% 30% 0;
+  // border-radius: 0 30% 30% 0;
 }
 .next {
   right: 0;
-  border-radius: 30% 0 0 30%;
+  // border-radius: 30% 0 0 30%;
+}
+.display_none {
+  display: none;
 }
 .exit {
   position: absolute;
