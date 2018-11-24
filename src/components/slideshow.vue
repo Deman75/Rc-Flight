@@ -1,16 +1,20 @@
 <template lang="pug">
   .wrapper(
     @mouseleave="mouseOverFunc"
+    @mouseup="mouseUpFunc"
     @touchmove.prevent
     )
     .image
       ul(
         @mousewheel.prevent="scroll"
-        @mousemove="mousemove"
         @mousedown="mouseDownFunc"
+        @mousemove="mousemove"
         @mouseup="mouseUpFunc"
+        @touchstart="mouseDownFunc"
+        @touchmove="mousemove"
+        @touchend="mouseUpFunc"
         :class="{'image__list_transition' : !mouseDown}"
-      ).image__list#image__list
+      ).image__list
         li(
           v-if="slideshow[id] !== undefined"
           v-for="slide in slideshow[id]"
@@ -49,10 +53,11 @@ export default {
       timer: 0,
       mouseDown: false,
       mousePosX: 0,
-      mouseStartX: 0,
+      mouseMoveX: 0,
       mousePosY: 0,
       mouseDirect: 0,
       slideScroll: 0,
+      rate: 0.6 // Коэффициент влияния перемещения на движение слайдера.
     }
   },
   props: {
@@ -62,64 +67,86 @@ export default {
     }
   },
   created() {
-    if (this.slideshow[this.id] === undefined) {
+    if (this.slideshow[this.id] === undefined) { // Если для этого id  нет слайдов то выходим и еммитим событие выхода.
       this.$emit('close');
     };
   },
-  mounted() {
-
-  },
-  destroyed() {
-
-  },
   methods: {
     mouseDownFunc(e) {
-      e.preventDefault();
-      this.mouseDown = true;
-      this.slideScroll = this.actualSlide * 100;
-      this.mousePosX = e.clientX;
-      this.animFlag = true;
+      e.preventDefault(); // Нужно для того чтобы не "таскать" за мышкой картинку.
+      if (e.type === 'touchstart') { // Если событие с тач устройства, то берем первое касание
+        this.mousePosX = e.touches[0].clientX * this.rate; // Начальное положение стартовой точки
+      } else {
+        this.mousePosX = e.clientX; // Начальное положение стартовой точки
+      }
+      this.mouseDown = true; // Говорим что кнопка нажата для отслеживания движения.
+      this.slideScroll = this.actualSlide * 100; // Инициализация начального положения для скроллинга.
+      this.animFlag = true; // Эта переменная отвечает за включение класса с уменшьением размера картинки при перемещении.
     },
     mousemove(e) {
       if (this.mouseDown) {
 
-        e.preventDefault();
+        e.preventDefault(); // для отмены скролла на бакграунде
 
         const imageList = document.querySelector('.image__list');
-        const sliderWidth = (this.slideshow[this.id].length - 1) * 100;
+        const sliderWidth = (this.slideshow[this.id].length - 1) * 100; // узнаем колличество всех слайдов и получаем максимальный сдвиг в процентах.
+        let transformX = 0; // переменная для хранения готового числа для подстановки в translateX
+        let clientX = 0;
 
-        if (e.clientX > this.mousePosX) {  // move to left
-          if (this.mouseDirect !== 0) {
+        if (e.type === 'touchmove') { // Если событие с тач устройства, то берем первое касание
+          clientX = e.touches[0].clientX;  // Нужна для сохранения сдвига при выходе курсора из поля слайдера
+        } else {
+          clientX = e.clientX;
+        }
+        clientX *= this.rate;
+
+        this.mouseMoveX = clientX;  // Нужна для сохранения сдвига при выходе курсора из поля слайдера
+
+        if (clientX > this.mousePosX) {  // move to right
+          if (this.mouseDirect !== 0) { // если было изменено направление движения, обнуляем точку старта, чтобы слайдер срезу начал двигаться в другом напривлении
             this.mouseDirect = 0;
-            console.log(this.mouseDirect);
+            this.mousePosX = clientX;
           }
-          this.mousePosX = e.clientX;
-          this.slideScroll -= 2;
-        } else if (e.clientX < this.mousePosX) {  // move to right
+        } else if (clientX < this.mousePosX) {  // move to left
           if (this.mouseDirect !== 1) {
             this.mouseDirect = 1;
-            console.log(this.mouseDirect);
+            this.mousePosX = clientX;
           }
-          this.mousePosX = e.clientX;
-          this.slideScroll += 2;
         }
-        if (this.slideScroll < 0) this.slideScroll = 0;
-        if (this.slideScroll > sliderWidth) this.slideScroll = sliderWidth;
 
-        imageList.style=`transform: translateX(-${this.slideScroll}%)`;
+        transformX = this.slideScroll - (clientX) + this.mousePosX; // вычисляем необходимое смещения. В переменной slideScroll хранится начальное положение
+                                                                      // слайдера. От него и начинаем двигаться. Дальше отнимаем на сколько мы отъехали от старта.
+        // Проверяем крайние положения.
+        if (transformX < 0) transformX = 0;
+        if (transformX > sliderWidth) transformX = sliderWidth;
+
+        imageList.style=`transform: translateX(-${transformX}%)`; // применяем трансформирование.
       }
     },
     mouseUpFunc() {
-      const needSlide = Math.round((this.slideScroll)/100);
-      this.moveToSlide(needSlide);
-      this.mouseDown = false;
+      if (this.mouseDown) { // Делаем что-то только если кнопка мыши была нажата.
+        this.slideScroll -= this.mouseMoveX - this.mousePosX; // Присваеваем новое значение, для подсчета нужного слайда.
+
+        const sliderWidth = (this.slideshow[this.id].length - 1) * 100; // узнаем колличество всех слайдов и получаем максимальный сдвиг в процентах.
+        // Проверяем крайние положения.
+        if (this.slideScroll < 0) {
+          this.slideScroll = 0;
+        } else if (this.slideScroll > sliderWidth) {
+          this.slideScroll = sliderWidth;
+        }
+
+        const needSlide = Math.round((this.slideScroll)/100); // Округляем до ближайшего целого, для понимания какой по номеру слад ближе.
+
+        this.moveToSlide(needSlide); // Двигаемся к нужному слайду.
+        this.mouseDown = false;
+      }
     },
-    mouseOverFunc() {
+    mouseOverFunc() { // отрабатываем событие "выхода" из поля.
       if (this.mouseDown) {
         this.mouseUpFunc();
       }
     },
-    scroll(e) {
+    scroll(e) { // Фунцкия для смены кадров скроллом.
       if (e.deltaX > 5 && !this.animFlag) {
         this.nextSlide();
       }
@@ -128,25 +155,25 @@ export default {
       }
     },
     moveToSlide(numberSlide) {
-      const slideCount = this.slideshow[this.id].length;
+      const slideCount = this.slideshow[this.id].length; // колличество слйдов.
       const imageList = document.querySelector('.image__list');
 
-      clearTimeout(this.timer);
+      clearTimeout(this.timer); // Обнуляем таймаут, на сулчай если во время анимации еще раз нажать кнопку смены слайда
       this.timer = setTimeout(() => {
-        this.animFlag = false;
+        this.animFlag = false; // Отменяет анимацию уменшьения картинки при завершении анимации (которая длиться 1 секунду)
       }, 900);
 
-      if (numberSlide > this.actualSlide) {
+      if (numberSlide > this.actualSlide) { // Проверка, в какую сторону двигаемся.
 
-        if (this.actualSlide + 1 < slideCount) {
-          this.actualSlide = numberSlide;
-          this.animFlag = true;
-        } else {
+        if (this.actualSlide + 1 < slideCount) { // Двигаеся только если значения отличаюься. Актуально для крайних кадров.
+          this.actualSlide = numberSlide; // Сохраняем к какому слайду нужно
+          this.animFlag = true; // Запуск анимации уменьшения картинки
+        } else { // Если двигаться не надо, все обнуляем.
           clearTimeout(this.timer)
           this.animFlag = false;
         }
 
-      } else {
+      } else { // Здесь все тоже самое только если двигаться нужно в другую сторону.
 
         if (this.actualSlide - 1 >= 0) {
           this.actualSlide = numberSlide;
@@ -158,13 +185,13 @@ export default {
       }
 
       setTimeout(() => {
-        imageList.style=`transform: translateX(-${this.actualSlide * 100}%)`;
+        imageList.style=`transform: translateX(-${this.actualSlide * 100}%)`; // Присваиваем смещение в процентах
       }, 1);
     },
-    nextSlide() {
+    nextSlide() { // Кнопки слайдера
       this.moveToSlide(this.actualSlide + 1);
     },
-    prevSlide() {
+    prevSlide() { // Кнопки слайдера
       this.moveToSlide(this.actualSlide - 1);
     }
   }
