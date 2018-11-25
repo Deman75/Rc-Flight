@@ -4,10 +4,10 @@ section.slider
     li(
       v-for="slide in slides"
       :key="slide.id"
+      @click="showSlideShow = true, slideshowId = slide.id"
       ).slider__item
       button(
         type="button"
-        @click="showSlideShow = true, slideshowId = slide.id"
         ).slider__img
         img(
           :alt="slide.title"

@@ -2,6 +2,8 @@
   .wrapper(
     @mouseleave="mouseOverFunc"
     @mouseup="mouseUpFunc"
+    @touchend="mouseUpFunc"
+    @touchcancel="mouseOverFunc"
     @touchmove.prevent
     )
     .image
@@ -13,7 +15,7 @@
         @touchstart="mouseDownFunc"
         @touchmove="mousemove"
         @touchend="mouseUpFunc"
-        :class="{'image__list_transition' : !mouseDown}"
+        :class="{'image__list_transition' : !mouseMovet}"
       ).image__list
         li(
           v-if="slideshow[id] !== undefined"
@@ -28,13 +30,17 @@
       button(
           type="button"
           @click="prevSlide"
-          :class="{'display_none' : mouseDown}"
+          :class="{'display_none' : mouseMovet}"
         ).prev
+        .arrow.arrow_left
+          arrow
       button(
           type="button"
           @click="nextSlide"
-          :class="{'display_none' : mouseDown}"
+          :class="{'display_none' : mouseMovet}"
         ).next
+        .arrow
+          arrow
     .exit(
       @click="$emit('close')"
       )
@@ -43,21 +49,26 @@
 <script>
 
 import slideshow from '../data/galery-all.json';
+import arrow from './icons/arrow.vue';
 
 export default {
+  components: {
+    arrow,
+  },
   data: () => {
     return {
       slideshow,
-      animFlag: false,
-      actualSlide: 0,
+      animFlag: false, // Если true то картинка уменьшается.
+      actualSlide: 0, // Какой слайд сейчас показывается.
       timer: 0,
-      mouseDown: false,
-      mousePosX: 0,
+      mouseDown: false, // Что кнопка на миши нажата или есть касание пальца
+      mouseMovet: false, // Движение мышы или пальца при нажатии
+      mousePosX: 0, // Хранится положение курсора, касания.
       mouseMoveX: 0,
       mousePosY: 0,
-      mouseDirect: 0,
-      slideScroll: 0,
-      rate: 0.6 // Коэффициент влияния перемещения на движение слайдера.
+      mouseDirect: 0, // Определения направления движения курсора относительно точки инициализации
+      slideScroll: 0, // Хранится актуальное смещения скрола.
+      rate: 0.3 // Коэффициент влияния перемещения на движение слайдера.
     }
   },
   props: {
@@ -74,17 +85,22 @@ export default {
   methods: {
     mouseDownFunc(e) {
       e.preventDefault(); // Нужно для того чтобы не "таскать" за мышкой картинку.
-      if (e.type === 'touchstart') { // Если событие с тач устройства, то берем первое касание
-        this.mousePosX = e.touches[0].clientX * this.rate; // Начальное положение стартовой точки
-      } else {
-        this.mousePosX = e.clientX; // Начальное положение стартовой точки
-      }
       this.mouseDown = true; // Говорим что кнопка нажата для отслеживания движения.
-      this.slideScroll = this.actualSlide * 100; // Инициализация начального положения для скроллинга.
-      this.animFlag = true; // Эта переменная отвечает за включение класса с уменшьением размера картинки при перемещении.
     },
     mousemove(e) {
       if (this.mouseDown) {
+        if (!this.mouseMovet) { // Если после касания произашло движение - инициализируем скролл
+          if (e.type === 'touchmove') { // Если событие с тач устройства, то берем первое касание
+            this.rate = 0.8;
+            this.mousePosX = e.touches[0].clientX * this.rate; // Начальное положение стартовой точки
+          } else {
+            this.mousePosX = e.clientX * this.rate; // Начальное положение стартовой точки
+          }
+          this.slideScroll = this.actualSlide * 100; // Инициализация начального положения для скроллинга.
+          this.animFlag = true; // Эта переменная отвечает за включение класса с уменшьением размера картинки при перемещении.
+          this.mouseMovet = true;
+          clearTimeout(this.timer);
+        }
 
         e.preventDefault(); // для отмены скролла на бакграунде
 
@@ -102,7 +118,7 @@ export default {
 
         this.mouseMoveX = clientX;  // Нужна для сохранения сдвига при выходе курсора из поля слайдера
 
-        if (clientX > this.mousePosX) {  // move to right
+        if (clientX >= this.mousePosX) {  // move to right
           if (this.mouseDirect !== 0) { // если было изменено направление движения, обнуляем точку старта, чтобы слайдер срезу начал двигаться в другом напривлении
             this.mouseDirect = 0;
             this.mousePosX = clientX;
@@ -119,12 +135,11 @@ export default {
         // Проверяем крайние положения.
         if (transformX < 0) transformX = 0;
         if (transformX > sliderWidth) transformX = sliderWidth;
-
         imageList.style=`transform: translateX(-${transformX}%)`; // применяем трансформирование.
       }
     },
     mouseUpFunc() {
-      if (this.mouseDown) { // Делаем что-то только если кнопка мыши была нажата.
+      if (this.mouseMovet) { // Делаем что-то только если кнопка мыши была нажата.
         this.slideScroll -= this.mouseMoveX - this.mousePosX; // Присваеваем новое значение, для подсчета нужного слайда.
 
         const sliderWidth = (this.slideshow[this.id].length - 1) * 100; // узнаем колличество всех слайдов и получаем максимальный сдвиг в процентах.
@@ -138,8 +153,9 @@ export default {
         const needSlide = Math.round((this.slideScroll)/100); // Округляем до ближайшего целого, для понимания какой по номеру слад ближе.
 
         this.moveToSlide(needSlide); // Двигаемся к нужному слайду.
-        this.mouseDown = false;
+        this.mouseMovet = false;
       }
+      this.mouseDown = false;
     },
     mouseOverFunc() { // отрабатываем событие "выхода" из поля.
       if (this.mouseDown) {
@@ -147,11 +163,13 @@ export default {
       }
     },
     scroll(e) { // Фунцкия для смены кадров скроллом.
-      if (e.deltaX > 5 && !this.animFlag) {
-        this.nextSlide();
-      }
-      if (e.deltaX < -5 && !this.animFlag) {
-        this.prevSlide();
+      if (e.type === "mousewheel") {
+        if (e.deltaX > 5 && !this.animFlag) {
+          this.nextSlide();
+        }
+        if (e.deltaX < -5 && !this.animFlag) {
+          this.prevSlide();
+        }
       }
     },
     moveToSlide(numberSlide) {
@@ -169,7 +187,7 @@ export default {
           this.actualSlide = numberSlide; // Сохраняем к какому слайду нужно
           this.animFlag = true; // Запуск анимации уменьшения картинки
         } else { // Если двигаться не надо, все обнуляем.
-          clearTimeout(this.timer)
+          clearTimeout(this.timer);
           this.animFlag = false;
         }
 
@@ -251,20 +269,42 @@ export default {
   top: 0;
   width: 15%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: rgba(0, 0, 0, 0);
   transition: background-color .3s;
 
+  @include phone {
+    width: 13%;
+  }
+
   &:hover {
     background-color: rgba(0, 0, 0, .3);
+    .arrow {
+      fill: rgba(239, 131, 118, 1);
+    }
   }
 }
 .prev {
   left: 0;
-  // border-radius: 0 30% 30% 0;
 }
 .next {
   right: 0;
-  // border-radius: 30% 0 0 30%;
+}
+.arrow {
+  display: block;
+  fill: #fff;
+  width: 50px;
+  height: 50px;
+
+  @include phone {
+    width: 30px;
+    height: 30px;
+  }
+}
+.arrow_left {
+  transform: rotate(180deg);
 }
 .display_none {
   display: none;

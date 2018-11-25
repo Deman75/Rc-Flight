@@ -166,7 +166,7 @@ export default {
         let top = (videoHeight/2) - (this.height / 2);
         video.style.width ='';
         video.style.left = '';
-
+        video.style.top = `-${top}px`
       }
     },
     arrowDown () { // функция прокрутки страницы вниз при нажатии на стрелку "вниз"
