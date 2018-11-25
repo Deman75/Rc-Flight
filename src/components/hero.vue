@@ -79,10 +79,8 @@ export default {
       const video = document.querySelector('.video');
       if ( start ) {
         video.play();
-        console.log('play');
       } else if ( !start ) {
         video.pause();
-        console.log('pause');
       }
     },
     resize(e) {
