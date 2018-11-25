@@ -1,9 +1,7 @@
 <template lang="pug">
 div.home
   section.hero
-    Hero(
-      :play-video="playVideo"
-      )
+    Hero
   title-section(
     :titleData="titleData"
     )
@@ -48,17 +46,13 @@ export default {
     this.height = window.innerHeight;
     const hero = document.querySelector('.hero');
     hero.style.height=`${this.height}px`;
-
-    document.addEventListener("mousemove", this.mousemove);
-    document.addEventListener("scroll", this.mousemove);
-    setInterval(this.checkBrowserActive, 2000);
   },
   methods: {
     resize (e) {
       this.height = e.currentTarget.innerHeight;
       this.changeSize();
     },
-    changeSize () {
+    changeSize () { // Плавное изменение размеров секции hero, так как она должна быть всегда про размеру окна (на браузерах ios изменяется высота окна при появлении навигации)
       const hero = document.querySelector('.hero');
 
       const startTime = Date.now()
@@ -86,23 +80,6 @@ export default {
 
       anim()
     },
-    mousemove () {
-      if (document.hidden) {
-        return
-      }
-      this.dateLastActive = Date.now();
-      // console.log('acteve');
-      this.playVideo = true;
-    },
-    checkBrowserActive () {
-      // if ( Date.now() - this.dateLastActive > 4000) {
-      //   console.log('sleep');
-      // }
-      if (document.hidden) {
-        // console.log('sleep');
-        this.playVideo = false;
-      }
-    }
   }
 };
 </script>

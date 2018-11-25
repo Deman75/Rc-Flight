@@ -37,14 +37,13 @@ export default {
     return {
       width: 0,
       height: 0,
-      hover: false
+      hover: false,
+      playVideo: true,
+      dateLastActive: 0
     }
   },
   props: {
-    playVideo: {
-      type: Boolean,
-      default: false
-    }
+
   },
   created() {
     window.addEventListener("resize", this.resize);
@@ -57,13 +56,40 @@ export default {
     this.height = window.innerHeight;
     this.videoSizeInit();
 
-    //setInterval(this.checkVideoPlay, 1000)
+    this.mousemove();
+    document.addEventListener("mousemove", this.mousemove);
+    document.addEventListener("scroll", this.mousemove);
+    setInterval(this.checkBrowserActive, 2000);
   },
   methods: {
+    mousemove () { // Любое движение мыши на сайте обнуляет отсчет "бездействия" и видео не останавливается.
+      this.dateLastActive = Date.now();
+      if (!this.playVideo) { // Если произашло событие а видео не "идет" то запускаем.
+        this.playVideo = true;
+        this.startStopVideo(true);
+      }
+    },
+    checkBrowserActive () { // Если на сайте нет активности то останавливаем проигрываение видео
+      if ( Date.now() - this.dateLastActive > 120000 && this.playVideo) { // Проверяем сеолько времени прошло с последней активности
+        this.playVideo = false;
+        this.startStopVideo(false);
+      }
+    },
+    startStopVideo ( start ) { // Запуск - остановка видео. true - играем.
+      const video = document.querySelector('.video');
+      if ( start ) {
+        video.play();
+        console.log('play');
+      } else if ( !start ) {
+        video.pause();
+        console.log('pause');
+      }
+    },
     resize(e) {
+      // Задаем значения для установки новой высоты и ширины видео, чтобы центр видео был в центре окна
       this.width = e.currentTarget.innerWidth;
       this.height = e.currentTarget.innerHeight;
-      setTimeout(() => {
+      setTimeout(() => { // Задержка на изменение размера окна.
         this.changeSize();
       },40);
     },
@@ -71,22 +97,22 @@ export default {
       const video = document.querySelector('.video');
       const aspectRatio = 1.7777777778; // aspect Ratio 16/9 width/height
 
-      if (this.width / this.height < aspectRatio) {
+      if (this.width / this.height < aspectRatio) { // Узнаем, что нужно увеличивать, ширину или высоту видое.
         video.style.height ='';
         video.style.top = '';
 
-        const startTime = Date.now()
-        const duration = 200
-        const value = video.offsetWidth
-        const need = (this.height * aspectRatio) - value
-        let left = 0;
+        const startTime = Date.now() // Стартовое время для анимации
+        const duration = 200 // Время анимации в миллисекундах
+        const value = video.offsetWidth // Нынешняя ширина видео.
+        const need = (this.height * aspectRatio) - value // Нужная ширина видео.
+        let left = 0; // Смещение влево, для центровки видео.
         const anim = () => {
-          let progress = (Date.now() - startTime)/duration
-          if (progress > 1) {
+          let progress = (Date.now() - startTime)/duration // Установка актуального положения прогресса
+          if (progress > 1) { // Проверка крайнего состояния
             progress = 1
           }
-          progress = Math.sin(Math.acos(progress**1.4 - 1));
-          video.style.width = (need * progress) + value + 'px'
+          progress = Math.sin(Math.acos(progress**1.4 - 1)); //График скорости анимации.
+          video.style.width = (need * progress) + value + 'px' // Подсчет ширины на данном шаге
           left = (((need * progress) + value)/2) - (this.width / 2); // считаем смещение влево.
           video.style.left = `-${left}px`;
           if (progress == 1) {
@@ -95,8 +121,8 @@ export default {
           requestAnimationFrame(anim)
         }
         anim()
-        this.videoSizeInit();
-      } else if (this.width / this.height > aspectRatio) {
+        this.videoSizeInit(); // Если анимация "проскочила" нужный размер то эта функция мгновенно установит правильене размеры.
+      } else if (this.width / this.height > aspectRatio) { // все тоже самое, только для случая, когда нужно изменять высоту.
         video.style.width ='';
         video.style.left = '';
         const startTime = Date.now()
@@ -123,7 +149,7 @@ export default {
         this.videoSizeInit();
       }
     },
-    videoSizeInit () {
+    videoSizeInit () { // Мгновенная установка нужного размера и смещения видео.
       const video = document.querySelector('.video');
       const aspectRatio = 1.7777777778; // aspect Ratio 16/9 width/height
 
@@ -145,10 +171,10 @@ export default {
 
       }
     },
-    arrowDown () {
+    arrowDown () { // функция прокрутки страницы вниз при нажатии на стрелку "вниз"
       const startTime = Date.now();
       const scroll = window.scrollY;
-      const height = this.height - scroll;
+      const height = this.height - scroll; // для учета нанешнего скролла, чтобы сместиться только на нужную высоту
       const duration = height * 1.2;
 
       const scrollDown = () => {
@@ -170,22 +196,7 @@ export default {
 
       scrollDown();
     },
-    checkVideoPlay () {
-      const video = document.querySelector('.video');
-      if ( this.playVidio ) {
-        video.pause();
-        console.log('pause');
-      } else {
-        video.play();
-        console.log('play');
-      }
-    }
   },
-  watch:{
-    'playVidio'(newVal, oldVal){
-      console.log(newVal);
-    }
-  }
 };
 </script>
 
