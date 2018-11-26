@@ -1,5 +1,7 @@
 <template lang="pug">
-section.slider
+section(
+  @mousewheel="slideScroll"
+  ).slider
   ul.slider__list
     li(
       v-for="slide in slides"
@@ -18,12 +20,12 @@ section.slider
         article.slider__text {{slide.desc}}
   button(
     type="button"
-    @click="prevBtn"
+    @click="sliderButton(0)"
     ).slider__prev
     .arrow
   button(
     type="button"
-    @click="nextBtn"
+    @click="sliderButton(1)"
     ).slider__next
     .arrow.arrow_next
   slideshow(
@@ -47,34 +49,47 @@ export default {
       slides,
       showSlideShow: false,
       slideshowId: 0,
+      sliderWidth: 0,
+      slideWidth: 0,
     }
   },
+  mounted() {
+    const slider = document.querySelector('.slider__list');
+    const items = document.querySelectorAll('.slider__item');
+    const marginRight = parseInt(getComputedStyle(items[0]).getPropertyValue('margin-right').match(/\d+/)[0]);
+    this.slideWidth = items[0].offsetWidth + marginRight;
+    this.sliderWidth = this.slideWidth * items.length - slider.offsetWidth + marginRight;
+  },
   methods: {
-    nextBtn: function () {
+    sliderButton(direction) { // 1 - next slide, 0 - prev slide
       const slider = document.querySelector('.slider__list');
-      const items = document.querySelectorAll('.slider__item');
-      const width = items[0].offsetWidth;
-      const marginRight = parseInt(getComputedStyle(items[0]).getPropertyValue('margin-right').match(/\d+/)[0]);
-      const sliderWidth = (width + marginRight) * items.length - slider.offsetWidth + marginRight;
-      this.transformActualPosition += width + marginRight;
-      if (this.transformActualPosition > sliderWidth) {
-        this.transformActualPosition = sliderWidth;
+      if (direction === 1) {
+        this.transformActualPosition += this.slideWidth;
+        if (this.transformActualPosition > this.sliderWidth) {
+          this.transformActualPosition = this.sliderWidth;
+        }
+      } else if (direction === 0) {
+        this.transformActualPosition -= this.slideWidth;
+        if (this.transformActualPosition < 0) {
+          this.transformActualPosition = 0;
+        }
       }
-      slider.style=`transform: translateX(-${this.transformActualPosition}px)`;
+      slider.style=`transform: translateX(-${this.transformActualPosition}px); transition: transform .6s`;
     },
-    prevBtn: function () {
-      const slider = document.querySelector('.slider__list');
-      const item = document.querySelector('.slider__item');
-      const width = item.offsetWidth;
-      const sliderWidth = slider.offsetWidth;
-      let marginRight = marginRight = parseInt(getComputedStyle(item).getPropertyValue('margin-right').match(/\d+/)[0]);
-      this.transformActualPosition -= width + marginRight;
-      if (this.transformActualPosition < 0) {
-        this.transformActualPosition = 0;
-      }
+    slideScroll(e) {
+      if (e.deltaX !== 0) {
+        e.preventDefault();
+        const slider = document.querySelector('.slider__list');
 
-      slider.style=`transform: translateX(-${this.transformActualPosition}px)`;
-    },
+        this.transformActualPosition += e.deltaX;
+        if (this.transformActualPosition < 0) {
+          this.transformActualPosition = 0;
+        } else if (this.transformActualPosition > this.sliderWidth) {
+          this.transformActualPosition = this.sliderWidth;
+        }
+        slider.style=`transform: translateX(-${this.transformActualPosition}px)`;
+      }
+    }
   }
 }
 </script>
@@ -90,7 +105,7 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   transform: translateX(0%);
-  transition: transform .5s;
+  // transition: transform .5s;
 }
 .slider__item {
   // display: inline-block;

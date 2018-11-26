@@ -68,25 +68,25 @@ export default {
       mousePosY: 0,
       mouseDirect: 0, // Определения направления движения курсора относительно точки инициализации
       slideScroll: 0, // Хранится актуальное смещения скрола.
-      rate: 0.3 // Коэффициент влияния перемещения на движение слайдера.
+      rate: 0.3, // Коэффициент влияния перемещения на движение слайдера.
     }
   },
   props: {
     id: {
       type: Number,
       default: 0
-    }
+    },
   },
   created() {
     if (this.slideshow[this.id] === undefined) { // Если для этого id  нет слайдов то выходим и еммитим событие выхода.
       this.$emit('close');
     };
-
   },
   mounted() {
     const images = document.querySelectorAll('.image__img');
     const slides = this.slideshow[this.id];
 
+    // Поочередная закрузка картинок для слйдшоу
     async function loadImage() {
       for (var i = 0; i < slides.length; i++) {
         await new Promise((resolve) => {
@@ -273,7 +273,7 @@ export default {
 .image__img {
   max-width: 100%;
   max-height: 100%;
-  transition: max-width .5s, max-height .5s;
+  transition: max-width .3s, max-height .3s;
   will-change: auto;
 }
 .image__img_width {
@@ -297,6 +297,20 @@ export default {
   }
 
   &:hover {
+    background-color: rgba(0, 0, 0, .3);
+    .arrow {
+      fill: rgba(239, 131, 118, 1);
+    }
+  }
+}
+.button_touch_device {
+  &:hover {
+    background-color: rgba(0, 0, 0, 0);
+    .arrow {
+      fill: #fff;
+    }
+  }
+  &:active {
     background-color: rgba(0, 0, 0, .3);
     .arrow {
       fill: rgba(239, 131, 118, 1);

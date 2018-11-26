@@ -12,8 +12,7 @@ svg(
 </template>
 
 <script>
-export default {
-}
+export default {};
 </script>
 
 <style lang="scss" scoped>
@@ -21,6 +20,6 @@ export default {
   width: 100%;
   height: 100%;
   fill: inherit;
-  transition: fill .3s;
+  transition: fill 0.3s;
 }
 </style>

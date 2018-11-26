@@ -53,33 +53,29 @@ export default {
       this.changeSize();
     },
     changeSize () { // Плавное изменение размеров секции hero, так как она должна быть всегда про размеру окна (на браузерах ios изменяется высота окна при появлении навигации)
-      const hero = document.querySelector('.hero');
+      const hero = document.querySelector(".hero");
 
-      const startTime = Date.now()
-      const duration = 300
-      const height = hero.offsetHeight
-      const need = this.height - height
+      const startTime = Date.now();
+      const duration = 300;
+      const height = hero.offsetHeight;
+      const need = this.height - height;
 
       const anim = () => {
-        let progress = (Date.now() - startTime)/duration
+        let progress = (Date.now() - startTime) / duration;
 
         if (progress > 1) {
-          progress = 1
+          progress = 1;
         }
-        progress = Math.sin(Math.acos(progress**1.4 - 1));
+        progress = Math.sin(Math.acos(progress ** 1.4 - 1));
 
-        hero.style.height = (need * progress) + height + 'px'
-
-
+        hero.style.height = need * progress + height + "px";
         if (progress == 1) {
-          return
+          return;
         }
-
-        requestAnimationFrame(anim)
-      }
-
-      anim()
-    },
+        requestAnimationFrame(anim);
+      };
+      anim();
+    }
   }
 };
 </script>
@@ -96,6 +92,5 @@ export default {
   @include tablet {
     min-height: auto;
   }
-
 }
 </style>
