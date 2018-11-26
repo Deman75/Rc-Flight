@@ -24,20 +24,20 @@
         ).image__item
           img(
             alt="slide.title"
-            :src="slide.image"
+            /* :src="" */
             :class="{'image__img_width' : animFlag}"
           ).image__img
       button(
           type="button"
           @click="prevSlide"
-          :class="{'display_none' : mouseMovet}"
+          :class="{'display_none' : mouseMovet || actualSlide === 0}"
         ).prev
         .arrow.arrow_left
           arrow
       button(
           type="button"
           @click="nextSlide"
-          :class="{'display_none' : mouseMovet}"
+          :class="{'display_none' : mouseMovet || actualSlide === slideshow[id].length - 1}"
         ).next
         .arrow
           arrow
@@ -81,6 +81,23 @@ export default {
     if (this.slideshow[this.id] === undefined) { // Если для этого id  нет слайдов то выходим и еммитим событие выхода.
       this.$emit('close');
     };
+
+  },
+  mounted() {
+    const images = document.querySelectorAll('.image__img');
+    const slides = this.slideshow[this.id];
+
+    async function loadImage() {
+      for (var i = 0; i < slides.length; i++) {
+        await new Promise((resolve) => {
+          images[i].src = slides[i].image;
+          images[i].addEventListener('load', function () {
+            resolve();
+          })
+        })
+      }
+    }
+    loadImage();
   },
   methods: {
     mouseDownFunc(e) {
@@ -140,6 +157,7 @@ export default {
     },
     mouseUpFunc() {
       if (this.mouseMovet) { // Делаем что-то только если кнопка мыши была нажата.
+        this.mouseMovet = false;
         this.slideScroll -= this.mouseMoveX - this.mousePosX; // Присваеваем новое значение, для подсчета нужного слайда.
 
         const sliderWidth = (this.slideshow[this.id].length - 1) * 100; // узнаем колличество всех слайдов и получаем максимальный сдвиг в процентах.
@@ -153,7 +171,6 @@ export default {
         const needSlide = Math.round((this.slideScroll)/100); // Округляем до ближайшего целого, для понимания какой по номеру слад ближе.
 
         this.moveToSlide(needSlide); // Двигаемся к нужному слайду.
-        this.mouseMovet = false;
       }
       this.mouseDown = false;
     },
