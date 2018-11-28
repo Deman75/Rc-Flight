@@ -21,7 +21,8 @@ export default {
     return {
       titleData: {
         title: "Авиамоделизм",
-        text: "Это не только спорт. Это нечто большее. Образ жизни, умение строить модели и быть летчиком испытателем, не рискуя жизнью. В статье немного подробнее об этом!"
+        text: "Это не только спорт. Это нечто большее. Образ жизни, умение строить модели и быть летчиком испытателем, не рискуя жизнью. В статье немного подробнее об этом!",
+        paddingBottom: 20
       }
     }
   }
@@ -40,6 +41,10 @@ export default {
   max-height: 550px;
   overflow: hidden;
 
+  @include tablet {
+    max-height: 100vh;
+  }
+
   @include phoneLand {
     max-height: 100vh;
   }
@@ -56,6 +61,10 @@ export default {
   padding-bottom: 20px;
   margin-top: -40px;
   text-indent: 20px;
+
+  @include tablet {
+    margin-top: 0px;
+  }
 
   @include phone {
     margin-top: 10px;

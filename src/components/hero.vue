@@ -48,9 +48,6 @@ export default {
   created() {
     window.addEventListener("resize", this.resize);
   },
-  destroyed() {
-    window.removeEventListener("resize", this.resize);
-  },
   mounted() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
@@ -59,7 +56,14 @@ export default {
     this.mousemove();
     document.addEventListener("mousemove", this.mousemove);
     document.addEventListener("scroll", this.mousemove);
+    document.addEventListener("touchstart", this.mousemove);
     setInterval(this.checkBrowserActive, 2000);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.resize);
+    document.addEventListener("mousemove", this.mousemove);
+    document.addEventListener("scroll", this.mousemove);
+    document.addEventListener("touchstart", this.mousemove);
   },
   methods: {
     mousemove () { // Любое движение мыши на сайте обнуляет отсчет "бездействия" и видео не останавливается.
@@ -239,6 +243,11 @@ export default {
   color: #df7466;
   transform: rotate(180deg) translateX(50%);
 
+  @include tablet {
+    width: 200px;
+    height: 120px;
+  }
+
   @include phone {
     width: 200px;
     height: 100px;
@@ -261,6 +270,10 @@ export default {
   font-size: 74px;
   position: relative;
   z-index: 2;
+
+  @include tablet {
+    font-size: 60px;
+  }
 
   @include phone {
     font-size: 50px;

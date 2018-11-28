@@ -17,12 +17,19 @@ export default {
 
 <style lang="scss" scoped>
 .title-wrap {
-  padding: 80px 0;
+  padding-top: 80px;
+  padding-bottom: 80px;
   width: 100%;
   background-color: #fff;
 
+  @include tablet {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
   @include phone {
-    padding: 10px 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   @include phoneLand {
@@ -31,6 +38,10 @@ export default {
 }
 .subtitle {
   font-size: 53px;
+
+  @include tablet {
+    font-size: 43px;
+  }
 
   @include phone {
     font-size: 35px;
@@ -45,6 +56,12 @@ export default {
   margin-top: 28px;
   font-size: 28px;
   font-weight: 300;
+
+  @include tablet {
+    font-size: 24px;
+    padding: 0 20px;
+    margin-top: 20px;
+  }
 
   @include phone {
     padding: 0 10px;

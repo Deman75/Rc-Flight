@@ -188,6 +188,10 @@ export default {
     margin-left: 20px;
   }
 
+  @include tablet {
+    height: 380px;
+  }
+
   @include phone {
     width: 100vw;
     min-width: 100vw;
@@ -270,6 +274,11 @@ export default {
     background-color: rgba(239, 131, 118, 0.75);
   }
 
+  @include tablet {
+    width: 80px;
+    height: 100px;
+  }
+
   @include phone {
     width: 70px;
     height: 70px;
@@ -291,6 +300,11 @@ export default {
   border-top: 2px solid #fff;
   border-left: 2px solid #fff;
   transform: rotate(-45deg);
+
+  @include tablet {
+    width: 18px;
+    height: 18px;
+  }
 
   @include phone {
     width: 15px;
