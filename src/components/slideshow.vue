@@ -2,9 +2,9 @@
   .wrapper(
     @mouseleave="mouseOverFunc"
     @mouseup="mouseUpFunc"
-    @touchend="mouseUpFunc"
-    @touchcancel="mouseOverFunc"
-    @touchmove.prevent
+    @touchstart="touchStartFunc"
+    @touchmove="touchMoveFunc"
+    @touchend="touchEndFunc"
     )
     .image
       ul(
@@ -12,9 +12,6 @@
         @mousedown="mouseDownFunc"
         @mousemove="mousemove"
         @mouseup="mouseUpFunc"
-        @touchstart="mouseDownFunc"
-        @touchmove="mousemove"
-        @touchend="mouseUpFunc"
         :class="{'image__list_transition' : !mouseMovet}"
       ).image__list
         li(
@@ -24,7 +21,7 @@
         ).image__item
           img(
             alt="slide.title"
-            /* :src="" */
+            src=""
             :class="{'image__img_width' : animFlag}"
           ).image__img
       button(
@@ -37,7 +34,7 @@
       button(
           type="button"
           @click="nextSlide"
-          :class="{'display_none' : mouseMovet || actualSlide === slideshow[id].length - 1}"
+          :class="{'display_none' : mouseMovet || actualSlide === slideCount - 1}"
         ).next
         .arrow
           arrow
@@ -69,6 +66,10 @@ export default {
       mouseDirect: 0, // Определения направления движения курсора относительно точки инициализации
       slideScroll: 0, // Хранится актуальное смещения скрола.
       rate: 0.3, // Коэффициент влияния перемещения на движение слайдера.
+      slideCount: 0,
+      touchStart: false,
+      touchAnimate: false,
+      touchStartX: 0,
     }
   },
   props: {
@@ -78,9 +79,14 @@ export default {
     },
   },
   created() {
-    if (this.slideshow[this.id] === undefined) { // Если для этого id  нет слайдов то выходим и еммитим событие выхода.
+    try {
+      this.slideCount = this.slideshow[this.id].length;
+    } catch {
       this.$emit('close');
-    };
+    }
+    // if (this.slideshow[this.id] === undefined) { // Если для этого id  нет слайдов то выходим и еммитим событие выхода.
+    //   this.$emit('close');
+    // };
   },
   mounted() {
     const images = document.querySelectorAll('.image__img');
@@ -97,9 +103,40 @@ export default {
         })
       }
     }
-    loadImage();
+    if (this.slideCount > 0) {
+      loadImage();
+    }
   },
   methods: {
+    touchStartFunc(e) {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStart = true;
+    },
+    touchMoveFunc(e) {
+      if ( !this.touchAnimate ) {
+        if (e.touches[0].clientX > this.touchStartX && e.touches[0].clientX - this.touchStartX > 30) {
+          // prev
+          this.prevSlide();
+          this.touchAnimate = true;
+          setTimeout(() => {
+            this.touchAnimate = false;
+          }, 500)
+        } else if (e.touches[0].clientX < this.touchStartX && this.touchStartX - e.touches[0].clientX > 30) {
+          // next
+          this.nextSlide();
+          this.touchAnimate = true;
+          setTimeout(() => {
+            this.touchAnimate = false;
+          }, 500)
+        }
+      } else {
+        e.preventDefault();
+      }
+
+    },
+    touchEndFunc() {
+      this.touchStart = false;
+    },
     mouseDownFunc(e) {
       e.preventDefault(); // Нужно для того чтобы не "таскать" за мышкой картинку.
       this.mouseDown = true; // Говорим что кнопка нажата для отслеживания движения.
@@ -107,12 +144,8 @@ export default {
     mousemove(e) {
       if (this.mouseDown) {
         if (!this.mouseMovet) { // Если после касания произашло движение - инициализируем скролл
-          if (e.type === 'touchmove') { // Если событие с тач устройства, то берем первое касание
-            this.rate = 0.8;
-            this.mousePosX = e.touches[0].clientX * this.rate; // Начальное положение стартовой точки
-          } else {
-            this.mousePosX = e.clientX * this.rate; // Начальное положение стартовой точки
-          }
+          this.mousePosX = e.clientX * this.rate; // Начальное положение стартовой точки
+
           this.slideScroll = this.actualSlide * 100; // Инициализация начального положения для скроллинга.
           this.animFlag = true; // Эта переменная отвечает за включение класса с уменшьением размера картинки при перемещении.
           this.mouseMovet = true;
@@ -126,12 +159,9 @@ export default {
         let transformX = 0; // переменная для хранения готового числа для подстановки в translateX
         let clientX = 0;
 
-        if (e.type === 'touchmove') { // Если событие с тач устройства, то берем первое касание
-          clientX = e.touches[0].clientX;  // Нужна для сохранения сдвига при выходе курсора из поля слайдера
-        } else {
-          clientX = e.clientX;
-        }
-        clientX *= this.rate;
+
+        clientX = e.clientX;
+        clientX *= this.rate; // коффициент пропрорциональности
 
         this.mouseMoveX = clientX;  // Нужна для сохранения сдвига при выходе курсора из поля слайдера
 
@@ -156,7 +186,7 @@ export default {
       }
     },
     mouseUpFunc() {
-      if (this.mouseMovet) { // Делаем что-то только если кнопка мыши была нажата.
+      if (this.mouseMovet) { // Делаем что-то только если кнопка мыши была нажата и сдвинуто положение.
         this.mouseMovet = false;
         this.slideScroll -= this.mouseMoveX - this.mousePosX; // Присваеваем новое значение, для подсчета нужного слайда.
 
@@ -170,7 +200,10 @@ export default {
 
         const needSlide = Math.round((this.slideScroll)/100); // Округляем до ближайшего целого, для понимания какой по номеру слад ближе.
 
-        this.moveToSlide(needSlide); // Двигаемся к нужному слайду.
+        setTimeout(() => {
+
+          this.moveToSlide(needSlide); // Двигаемся к нужному слайду.
+        },1)
       }
       this.mouseDown = false;
     },
@@ -330,6 +363,10 @@ export default {
   height: 50px;
 
   @include phone {
+    width: 30px;
+    height: 30px;
+  }
+  @include phoneLand {
     width: 30px;
     height: 30px;
   }

@@ -308,8 +308,7 @@ export default {
     transition: border .3s;
   }
 
-
-  @include phone {
+  @include tablet {
     width: 70px;
     height: 70px;
     bottom: 10px;

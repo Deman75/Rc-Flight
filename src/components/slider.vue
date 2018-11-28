@@ -1,6 +1,9 @@
 <template lang="pug">
 section(
   @mousewheel="slideScroll"
+  @touchstart="touchStartFunc"
+  @touchmove="touchMoveFunc"
+  @touchend="touchEndFunc"
   ).slider
   ul.slider__list
     li(
@@ -12,8 +15,8 @@ section(
         type="button"
         ).slider__img
         img(
-          :alt="slide.title"
-          :src="slide.image"
+          alt=""
+          src=""
         ).slider__img-img
       .slider__desc
         h3.slider__title {{slide.title}}
@@ -51,18 +54,78 @@ export default {
       slideshowId: 0,
       sliderWidth: 0,
       slideWidth: 0,
+      touchStart: false,
+      touchAnimate: false,
+      touchStartX: 0,
     }
   },
+  created() {
+    window.addEventListener("resize", this.resize);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.resize);
+  },
   mounted() {
-    const slider = document.querySelector('.slider__list');
-    const items = document.querySelectorAll('.slider__item');
-    const marginRight = parseInt(getComputedStyle(items[0]).getPropertyValue('margin-right').match(/\d+/)[0]);
-    this.slideWidth = items[0].offsetWidth + marginRight;
-    this.sliderWidth = this.slideWidth * items.length - slider.offsetWidth + marginRight;
+
+    this.resize();
+
+    const images = document.querySelectorAll('.slider__img-img');
+    const slides = this.slides;
+
+    // Поочередная закрузка картинок для слйдшоу
+    async function loadImage() {
+      for (var i = 0; i < slides.length; i++) {
+        await new Promise((resolve) => {
+          images[i].src = slides[i].image;
+          images[i].alt = slides[i].title;
+          images[i].addEventListener('load', function () {
+            resolve();
+          })
+        })
+      }
+    };
+    loadImage();
   },
   methods: {
+    touchStartFunc(e) {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStart = true;
+    },
+    touchMoveFunc(e) {
+      if ( !this.touchAnimate ) {
+        if (e.touches[0].clientX > this.touchStartX && e.touches[0].clientX - this.touchStartX > 30) {
+          // prev
+          this.sliderButton(0);
+          this.touchAnimate = true;
+          setTimeout(() => {
+            this.touchAnimate = false;
+          }, 500)
+        } else if (e.touches[0].clientX < this.touchStartX && this.touchStartX - e.touches[0].clientX > 30) {
+          // next
+          this.sliderButton(1);
+          this.touchAnimate = true;
+          setTimeout(() => {
+            this.touchAnimate = false;
+          }, 500)
+        }
+      } else {
+        e.preventDefault();
+      }
+
+    },
+    touchEndFunc() {
+      this.touchStart = false;
+    },
+    resize(){
+      const slider = document.querySelector('.slider__list');
+      const items = document.querySelectorAll('.slider__item');
+      const marginRight = parseInt(getComputedStyle(items[0]).getPropertyValue('margin-right').match(/\d+/)[0]);
+      this.slideWidth = items[0].offsetWidth + marginRight;
+      this.sliderWidth = this.slideWidth * items.length - slider.offsetWidth + marginRight;
+    },
     sliderButton(direction) { // 1 - next slide, 0 - prev slide
       const slider = document.querySelector('.slider__list');
+      this.transformActualPosition = Math.floor(this.transformActualPosition / this.slideWidth) * this.slideWidth;
       if (direction === 1) {
         this.transformActualPosition += this.slideWidth;
         if (this.transformActualPosition > this.sliderWidth) {
@@ -105,10 +168,9 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   transform: translateX(0%);
-  // transition: transform .5s;
+
 }
 .slider__item {
-  // display: inline-block;
   display: flex;
   flex-direction: column;
   width: 330px;
@@ -120,6 +182,7 @@ export default {
   will-change: transform;
   transition: transform 1.5s;
   position: relative;
+  box-sizing: border-box;
 
   &:first-child {
     margin-left: 20px;
@@ -136,7 +199,15 @@ export default {
   }
 
   @include phoneLand {
+    width: 100vw;
+    min-width: 100vw;
+    margin-right: 0;
+    padding: 0 10px;
     height: 100vh;
+    flex-direction: row;
+    &:first-child {
+      margin-left: 0;
+    }
   }
 }
 .slider__img {
@@ -148,6 +219,7 @@ export default {
   @include phoneLand {
     height: 100%;
     max-height: 100%;
+    width: 60%;
   }
 }
 .slider__img-img {
@@ -161,13 +233,8 @@ export default {
   height: 50%;
 
   @include phoneLand {
-    position: absolute;
-    height: auto;
-    left: 0;
-    top: 10px;
-    bottom: 10px;
-    right: 0;
-    justify-content: space-between;
+    height: 100%;
+    width: 40%;
   }
 }
 .slider__title {
@@ -175,17 +242,13 @@ export default {
   margin: 20px 0;
 
   @include phoneLand {
-    color: #fff;
     margin: 0;
     padding: 10px 10px;
-    background-color: rgba(0, 0, 0, .5);
   }
 }
 .slider__text {
   @include phoneLand {
-    color: #fff;
     padding: 10px 10px;
-    background-color: rgba(0, 0, 0, .5);
   }
 }
 .slider__prev, .slider__next {
@@ -211,6 +274,10 @@ export default {
     width: 70px;
     height: 70px;
   }
+  @include phoneLand {
+    width: 70px;
+    height: 70px;
+  }
 }
 .slider__next {
   left: 100%;
@@ -226,6 +293,10 @@ export default {
   transform: rotate(-45deg);
 
   @include phone {
+    width: 15px;
+    height: 15px;
+  }
+  @include phoneLand {
     width: 15px;
     height: 15px;
   }
