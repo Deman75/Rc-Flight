@@ -106,9 +106,9 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      touchDevice: 'touchDevice'
-    })
+    ...mapState('commons',[
+        'touchDevice'
+    ])
   },
   methods: {
     touchStartFunc(e) {

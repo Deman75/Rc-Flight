@@ -21,16 +21,17 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      touchDevice: 'touchDevice'
-    })
+    ...mapState('commons',[
+        'touchDevice',
+        'minContentHeight'
+    ])
   },
   created() {
     document.addEventListener('touchstart', this.touch);
   },
   methods: {
     ...mapActions({
-      deviceIsTouch: 'deviceIsTouch'
+      deviceIsTouch: 'commons/deviceIsTouch'
     }),
     touch(e) {
       if (this.touchDevice === false) {
@@ -98,6 +99,20 @@ article, img {
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+
+  &:before {
+    content: '';
+    display: block;
+    background: url('./assets/images/bg.png') center center no-repeat;
+    background-size: cover;
+    top: 0%;
+    left: 0%;
+    right: 0%;
+    bottom: 0%;
+    position: absolute;
+    z-index: -100;
+    filter: brightness(40%) blur(3px);
+  }
 }
 
 </style>

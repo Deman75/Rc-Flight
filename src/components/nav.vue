@@ -7,7 +7,7 @@ nav.nav
     li.nav__item
       router-link(to="/").nav__link Главная
     li.nav__item
-      router-link(to="/").nav__link О нас
+      router-link(to="/about").nav__link О нас
     li.nav__item
       router-link(to="/").nav__link Где мы
     li.nav__item
@@ -30,9 +30,9 @@ import { mapState } from 'vuex';
 
 export default {
   computed: {
-    ...mapState({
-      touchDevice: 'touchDevice'
-    })
+    ...mapState('commons',[
+        'touchDevice'
+    ])
   },
   methods: {
     hamburgerButton: () => {

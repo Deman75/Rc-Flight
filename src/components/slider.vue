@@ -69,9 +69,9 @@ export default {
     window.removeEventListener("resize", this.resize);
   },
   computed: {
-    ...mapState({
-      touchDevice: 'touchDevice'
-    })
+    ...mapState('commons',[
+        'touchDevice'
+    ])
   },
   mounted() {
 

@@ -44,17 +44,13 @@ export default {
       dateLastActive: 0
     }
   },
-  props: {
-
-  },
   created() {
     window.addEventListener("resize", this.resize);
-
   },
   computed: {
-    ...mapState({
-      touchDevice: 'touchDevice'
-    })
+    ...mapState('commons',[
+        'touchDevice'
+    ])
   },
   mounted() {
     this.width = window.innerWidth;

@@ -26,13 +26,37 @@ footer.footer
 import facebook from "./icons/facebook.vue"
 import instagram from "./icons/instagram.vue"
 import vk from "./icons/vk.vue"
+import { mapState, mapActions } from 'vuex'
 
 export default {
+  computed: {
+    ...mapState('commons', [
+      'footerHeight'
+    ]),
+  },
+  created() {
+    window.addEventListener("resize", this.footerResize);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.footerResize);
+  },
+  mounted() {
+    this.footerResize();
+  },
   components: {
     facebook,
     instagram,
     vk
   },
+  methods: {
+    ...mapActions({
+      changeFooterHeight: 'commons/changeFooterHeight'
+    }),
+    footerResize() {
+      const footer = document.querySelector('.footer');
+      this.changeFooterHeight(footer.offsetHeight);
+    }
+  }
 }
 </script>
 
