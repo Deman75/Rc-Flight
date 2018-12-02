@@ -1,7 +1,9 @@
 <template lang="pug">
 nav.nav
   .heder-line
-  ul.nav__list
+  ul(
+    :class="{'nav__item_hover' : !touchDevice}"
+    ).nav__list
     li.nav__item
       router-link(to="/").nav__link Главная
     li.nav__item
@@ -15,6 +17,7 @@ nav.nav
   .heder-line
   .hamburger(
     @click="hamburgerButton"
+    :class="{'hamburger_hover' : !touchDevice}"
     )
     svg.hamburger__icon(version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 40 35" enable-background="new 0 0 40 35" xml:space="preserve")
         path.hamburger__icon-top(d="M40,2.5C40,3.881,38.881,5,37.5,5h-35C1.119,5,0,3.881,0,2.5l0,0C0,1.119,1.119,0,2.5,0h35C38.881,0,40,1.119,40,2.5L40,2.5z")
@@ -23,7 +26,14 @@ nav.nav
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
+  computed: {
+    ...mapState({
+      touchDevice: 'touchDevice'
+    })
+  },
   methods: {
     hamburgerButton: () => {
       const nav = document.querySelector(".nav__list");
@@ -117,7 +127,7 @@ export default {
   border-radius: 5px;
   transition: border .2s;
 
-  &:hover {
+  &:active {
     border: 1px solid rgba(255, 255, 255, 0.35);
   }
 
@@ -127,6 +137,13 @@ export default {
 
   @include phoneLand {
     margin: 3px 0;
+  }
+}
+.nav__item_hover{
+  .nav__item{
+    &:hover {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
   }
 }
 .nav__link {
@@ -149,6 +166,11 @@ export default {
     display: block;
   }
 
+  &:active {
+    background-color: rgba(239, 131, 118, 0.75);
+  }
+}
+.hamburger_hover {
   &:hover {
     background-color: rgba(239, 131, 118, 0.75);
   }

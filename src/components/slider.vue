@@ -24,11 +24,13 @@ section(
   button(
     type="button"
     @click="sliderButton(0)"
+    :class="{'slider__button_hover' : !touchDevice}"
     ).slider__prev
     .arrow
   button(
     type="button"
     @click="sliderButton(1)"
+    :class="{'slider__button_hover' : !touchDevice}"
     ).slider__next
     .arrow.arrow_next
   slideshow(
@@ -41,6 +43,7 @@ section(
 <script>
 import slides from '../data/galery.json';
 import slideshow from './slideshow.vue';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -64,6 +67,11 @@ export default {
   },
   destroyed() {
     window.removeEventListener("resize", this.resize);
+  },
+  computed: {
+    ...mapState({
+      touchDevice: 'touchDevice'
+    })
   },
   mounted() {
 
@@ -270,7 +278,7 @@ export default {
   transition: background-color .3s;
   cursor: pointer;
 
-  &:hover {
+  &:active {
     background-color: rgba(239, 131, 118, 0.75);
   }
 
@@ -286,6 +294,11 @@ export default {
   @include phoneLand {
     width: 70px;
     height: 70px;
+  }
+}
+.slider__button_hover{
+  &:hover {
+    background-color: rgba(239, 131, 118, 0.75);
   }
 }
 .slider__next {

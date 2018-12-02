@@ -7,14 +7,38 @@
 </template>
 
 <script>
-import Nav from "@/components/nav.vue"
-import Footer from "@/components/footer.vue"
+import Nav from "@/components/nav.vue";
+import Footer from "@/components/footer.vue";
+import { mapActions, mapState } from 'vuex';
 
 export default {
   components: {
     app_nav: Nav,
     app_footer: Footer
-  }
+  },
+  data() {
+    return {
+    }
+  },
+  computed: {
+    ...mapState({
+      touchDevice: 'touchDevice'
+    })
+  },
+  created() {
+    document.addEventListener('touchstart', this.touch);
+  },
+  methods: {
+    ...mapActions({
+      deviceIsTouch: 'deviceIsTouch'
+    }),
+    touch(e) {
+      if (this.touchDevice === false) {
+        console.log(e);
+        this.deviceIsTouch(true);
+      }
+    },
+  },
 };
 </script>
 

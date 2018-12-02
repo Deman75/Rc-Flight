@@ -17,6 +17,7 @@
     button(
       type="button"
       @click="arrowDown"
+      :class="{'start_hover' : !touchDevice}"
       ).start
     .background
       video(poster='../assets/images/bg.png' autoplay playsinline muted loop).video
@@ -27,7 +28,8 @@
 <script>
 import logo from "./icons/logo.vue";
 import extra300 from "./icons/extra300.vue";
-//
+import { mapState } from 'vuex';
+
 export default {
   components: {
     logo,
@@ -47,6 +49,12 @@ export default {
   },
   created() {
     window.addEventListener("resize", this.resize);
+
+  },
+  computed: {
+    ...mapState({
+      touchDevice: 'touchDevice'
+    })
   },
   mounted() {
     this.width = window.innerWidth;
@@ -61,9 +69,9 @@ export default {
   },
   destroyed() {
     window.removeEventListener("resize", this.resize);
-    document.addEventListener("mousemove", this.mousemove);
-    document.addEventListener("scroll", this.mousemove);
-    document.addEventListener("touchstart", this.mousemove);
+    document.removeEventListener("mousemove", this.mousemove);
+    document.removeEventListener("scroll", this.mousemove);
+    document.removeEventListener("touchstart", this.mousemove);
   },
   methods: {
     mousemove () { // Любое движение мыши на сайте обнуляет отсчет "бездействия" и видео не останавливается.
@@ -321,6 +329,12 @@ export default {
     transition: border .3s;
   }
 
+  &:active {
+    &:after {
+      border-color: #df7366;
+    }
+  }
+
   @include tablet {
     width: 70px;
     height: 70px;
@@ -338,17 +352,19 @@ export default {
     bottom: 0;
   }
 
-  &:hover {
-    &:after {
-      border-color: #df7366;
-    }
-  }
-
   @include phone {
     width: 80px;
     height: 80px;
     font-size: 17px;
     font-weight: 400;
+  }
+}
+
+.start_hover {
+  &:hover {
+    &:after {
+      border-color: #df7366;
+    }
   }
 }
 

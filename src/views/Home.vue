@@ -10,10 +10,11 @@ div.home
 </template>
 
 <script>
-import Hero from "@/components/hero.vue"
-import titleSection from "@/components/title-section.vue"
-import slider from "@/components/slider.vue"
-import info from "@/components/info.vue"
+import Hero from "@/components/hero.vue";
+import titleSection from "@/components/title-section.vue";
+import slider from "@/components/slider.vue";
+import info from "@/components/info.vue";
+import { mapState } from 'vuex';
 
 export default {
   name: "home",
@@ -40,6 +41,11 @@ export default {
   },
   destroyed() {
     window.removeEventListener("resize", this.resize);
+  },
+  computed: {
+    ...mapState({
+      touchDevice: 'touchDevice'
+    }),
   },
   mounted() {
     this.width = window.innerWidth;

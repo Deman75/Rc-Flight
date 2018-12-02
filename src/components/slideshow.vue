@@ -27,14 +27,14 @@
       button(
           type="button"
           @click="prevSlide"
-          :class="{'display_none' : mouseMovet || actualSlide === 0}"
+          :class="{'display_none' : mouseMovet || actualSlide === 0, 'button_touch_device' : touchDevice}"
         ).prev
         .arrow.arrow_left
           arrow
       button(
           type="button"
           @click="nextSlide"
-          :class="{'display_none' : mouseMovet || actualSlide === slideCount - 1}"
+          :class="{'display_none' : mouseMovet || actualSlide === slideCount - 1, 'button_touch_device' : touchDevice}"
         ).next
         .arrow
           arrow
@@ -47,6 +47,7 @@
 
 import slideshow from '../data/galery-all.json';
 import arrow from './icons/arrow.vue';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -84,9 +85,6 @@ export default {
     } catch {
       this.$emit('close');
     }
-    // if (this.slideshow[this.id] === undefined) { // Если для этого id  нет слайдов то выходим и еммитим событие выхода.
-    //   this.$emit('close');
-    // };
   },
   mounted() {
     const images = document.querySelectorAll('.image__img');
@@ -106,6 +104,11 @@ export default {
     if (this.slideCount > 0) {
       loadImage();
     }
+  },
+  computed: {
+    ...mapState({
+      touchDevice: 'touchDevice'
+    })
   },
   methods: {
     touchStartFunc(e) {

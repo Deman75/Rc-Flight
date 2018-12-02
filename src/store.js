@@ -5,8 +5,17 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    touchDevice: true,
+    touchDevice: false,
   },
-  mutations: {},
-  actions: {}
+  mutations: {
+    newDeviceType (state, newType) {
+      state.touchDevice = newType;
+      console.log(newType);
+    }
+  },
+  actions: {
+    deviceIsTouch ({commit}, type) {
+      commit('newDeviceType', type)
+    }
+  }
 });
