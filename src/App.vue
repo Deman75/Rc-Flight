@@ -23,7 +23,7 @@ export default {
   computed: {
     ...mapState('commons',[
         'touchDevice',
-        'minContentHeight'
+        'footerHeight'
     ])
   },
   created() {
@@ -51,6 +51,7 @@ body, html {
   padding: 0;
   box-sizing: border-box;
   width: 100%;
+  height: 100%;
   min-height: 100%;
   font-size: 16px;
   color: #483949;
@@ -94,24 +95,25 @@ article, img {
   color: #2c3e50;
   font-weight: 400;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  position: relative;
 
   &:before {
     content: '';
     display: block;
     background: url('./assets/images/bg.png') center center no-repeat;
     background-size: cover;
-    top: 0%;
-    left: 0%;
-    right: 0%;
-    bottom: 0%;
+    top: -10%;
+    left: -10%;
+    right: -10%;
+    bottom: -10%;
     position: absolute;
     z-index: -100;
-    filter: brightness(40%) blur(3px);
+    filter: blur(3px) brightness(40%);
   }
 }
 

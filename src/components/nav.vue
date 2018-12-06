@@ -1,19 +1,22 @@
 <template lang="pug">
-nav.nav
+nav.nav(
+  @mousewheel="scroll"
+  @touchmove="scroll"
+  )
   .heder-line
   ul(
     :class="{'nav__item_hover' : !touchDevice}"
     ).nav__list
-    li.nav__item
+    li.nav__item(@click="hamburgerButton('close')")
       router-link(to="/").nav__link Главная
-    li.nav__item
+    li.nav__item(@click="hamburgerButton('close')")
       router-link(to="/about").nav__link О нас
-    li.nav__item
-      router-link(to="/").nav__link Где мы
-    li.nav__item
-      router-link(to="/").nav__link Контакты
-    li.nav__item
-      router-link(to="/").nav__link Блог
+    li.nav__item(@click="hamburgerButton('close')")
+      .nav__link Где мы
+    li.nav__item(@click="hamburgerButton('close')")
+      .nav__link Контакты
+    li.nav__item(@click="hamburgerButton('close')")
+      .nav__link Блог
   .heder-line
   .hamburger(
     @click="hamburgerButton"
@@ -35,12 +38,17 @@ export default {
     ])
   },
   methods: {
-    hamburgerButton: () => {
+    scroll (e) {
+      if (this.touchDevice) {
+        e.preventDefault();
+      }
+    },
+    hamburgerButton: (close) => {
       const nav = document.querySelector(".nav__list");
       const icon = document.querySelector(".hamburger__icon");
       const hamburger = document.querySelector(".hamburger");
 
-      if (nav.classList.contains('nav__list_active')) {
+      if (nav.classList.contains('nav__list_active') || close === 'close') {
         nav.classList.remove('nav__list_active');
         icon.classList.remove('hamburger__icon_active');
         hamburger.classList.remove('hamburger_background');
@@ -68,7 +76,7 @@ export default {
   z-index: 10;
 
   @include tablet {
-    background-color: rgba(0, 0, 0, .7);
+    background-color: rgba(0, 0, 0, .8);
     padding: 0;
     position: fixed;
     top: 0;
@@ -116,10 +124,10 @@ export default {
 }
 .nav__list_active {
   @include tablet {
-    height: 300px;
+    height: 100vh;
   }
   @include phoneLand {
-    height: 80vh;
+    height: 100vh;
   }
 }
 .nav__item {
@@ -139,19 +147,31 @@ export default {
     margin: 3px 0;
   }
 }
-.nav__item_hover{
-  .nav__item{
-    &:hover {
-      border: 1px solid rgba(255, 255, 255, 0.35);
-    }
-  }
-}
 .nav__link {
   padding: 5px 15px;
   font-size: 19px;
   font-weight: 600;
   color: #fff;
   text-decoration: none;
+  cursor: pointer;
+
+  border: 1px solid rgba(255, 255, 255, 0);
+  border-radius: 5px;
+  transition: border .2s;
+
+}
+.nav__item_hover{
+  .nav__item{
+    .nav__link {
+      &:hover {
+        border: 1px solid rgba(255, 255, 255, 0.35);
+      }
+    }
+  }
+}
+.router-link-exact-active {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  cursor: default;
 }
 .hamburger {
   display: none;
@@ -165,10 +185,6 @@ export default {
   @include tablet {
     display: block;
   }
-
-  &:active {
-    background-color: rgba(239, 131, 118, 0.75);
-  }
 }
 .hamburger_hover {
   &:hover {
@@ -176,7 +192,11 @@ export default {
   }
 }
 .hamburger_background {
-  background-color: rgba(239, 131, 118, 1);
+  top: 0;
+  right: 0;
+  bottom: auto;
+  border-radius: 0;
+  background-color: rgba(127, 127, 127, 0);
 }
 .hamburger__icon {
   padding: 7px 25px;
@@ -185,7 +205,7 @@ export default {
   height: 15px;
 
   .hamburger__icon-top, .hamburger__icon-bottom, .hamburger__icon-center {
-    transition: transform .3s, fill .3s;
+    transition: transform .5s, fill .3s;
   }
   .hamburger__icon-top {
     transform-origin: top;
@@ -195,6 +215,9 @@ export default {
   }
 }
 .hamburger__icon_active {
+  width: 30px;
+  height: 25px;
+
   .hamburger__icon-center{
     fill: rgba(255,255,255, 0);
   }

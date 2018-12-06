@@ -33,22 +33,22 @@ export default {
   }
 
   @include phoneLand {
-    padding: 0;
+    padding: 0 0 10px 0;
   }
 }
 .subtitle {
   font-size: 53px;
 
   @include tablet {
-    font-size: 43px;
+    font-size: 33px;
   }
 
   @include phone {
-    font-size: 35px;
+    font-size: 25px;
   }
 
   @include phoneLand {
-    font-size: 30px;
+    font-size: 20px;
   }
 }
 .desc {
@@ -65,12 +65,12 @@ export default {
 
   @include phone {
     padding: 0 10px;
-    font-size: 20px;
+    font-size: 18px;
     margin-top: 15px;
   }
 
   @include phoneLand {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 </style>

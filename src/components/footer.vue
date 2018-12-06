@@ -69,7 +69,7 @@ export default {
   padding: 20px 0;
 
   @include phone {
-    padding: 0;
+    padding: 5px 0;
   }
 }
 .top {

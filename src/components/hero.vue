@@ -41,7 +41,8 @@ export default {
       height: 0,
       hover: false,
       playVideo: true,
-      dateLastActive: 0
+      dateLastActive: 0,
+      timerOnResize: 0
     }
   },
   created() {
@@ -59,14 +60,14 @@ export default {
 
     this.mousemove();
     document.addEventListener("mousemove", this.mousemove);
-    document.addEventListener("scroll", this.mousemove);
+    window.addEventListener("scroll", this.scroll);
     document.addEventListener("touchstart", this.mousemove);
     setInterval(this.checkBrowserActive, 2000);
   },
   destroyed() {
     window.removeEventListener("resize", this.resize);
     document.removeEventListener("mousemove", this.mousemove);
-    document.removeEventListener("scroll", this.mousemove);
+    window.removeEventListener("scroll", this.scroll);
     document.removeEventListener("touchstart", this.mousemove);
   },
   methods: {
@@ -85,30 +86,40 @@ export default {
     },
     startStopVideo ( start ) { // Запуск - остановка видео. true - играем.
       const video = document.querySelector('.video');
+      if (video === null) return // Если мы находимся на другой вкладке, то этого компонента нет в дереве
       if ( start ) {
         video.play();
       } else if ( !start ) {
         video.pause();
       }
     },
+    scroll (e) {
+      this.mousemove();
+      if (e.currentTarget.scrollY === 0) { // Если изменили размер окна когда скролл был не в ноле, выполняем изменение размера блока видео
+        this.resize();
+      }
+    },
     resize(e) {
       // Задаем значения для установки новой высоты и ширины видео, чтобы центр видео был в центре окна
-      this.width = e.currentTarget.innerWidth;
-      this.height = e.currentTarget.innerHeight;
-      setTimeout(() => { // Задержка на изменение размера окна.
-        this.changeSize();
-      },40);
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+      if (window.scrollY === 0) { // Меняем размеры виде только если находимся в верху страницы. Чтобы не прыгало содержимое
+        clearTimeout(this.timerOnResize);
+        this.timerOnResize = setTimeout(() => { // Задержка на изменение размера окна.
+          this.changeSize();
+        },800);
+      }
     },
     changeSize () { // smooth animation on change size background video
       const video = document.querySelector('.video');
       const aspectRatio = 1.7777777778; // aspect Ratio 16/9 width/height
+      const duration = 400 // Время анимации в миллисекундах
 
       if (this.width / this.height < aspectRatio) { // Узнаем, что нужно увеличивать, ширину или высоту видое.
         video.style.height ='';
         video.style.top = '';
 
         const startTime = Date.now() // Стартовое время для анимации
-        const duration = 200 // Время анимации в миллисекундах
         const value = video.offsetWidth // Нынешняя ширина видео.
         const need = (this.height * aspectRatio) - value // Нужная ширина видео.
         let left = 0; // Смещение влево, для центровки видео.
@@ -132,7 +143,6 @@ export default {
         video.style.width ='';
         video.style.left = '';
         const startTime = Date.now()
-        const duration = 200
         const value = video.offsetHeight
         const need = (this.width / aspectRatio) - value
         let top = 0;
@@ -372,8 +382,6 @@ export default {
   right: 0;
   height: 100%;
   z-index: -10;
-  will-change: transform;
-  transition: height .3s;
 
   &:after {
     content: "";
@@ -395,5 +403,6 @@ export default {
   left: 0;
   top: 0;
   z-index: -10;
+  will-change: transform;
 }
 </style>
