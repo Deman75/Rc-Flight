@@ -1,12 +1,14 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import Vue from 'vue';
+import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-import commons from './store/commons'
+import storeObject from './store/index.js'
 
-export default new Vuex.Store({
-  modules: {
-    commons
-  }
-});
+export function createStore() {
+
+  const store = new Vuex.Store(storeObject);
+
+  return {store};
+
+}

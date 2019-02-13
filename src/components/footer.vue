@@ -62,6 +62,10 @@ export default {
 
 <style lang="scss" scoped>
 .footer {
+  position: relative;
+  // bottom: 0;
+  // left: 0;
+  z-index: 100;
   background-color: rgba(43, 37, 44, .8);
   color: #fff;
   width: 100%;

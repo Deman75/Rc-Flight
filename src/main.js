@@ -1,9 +1,11 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
+import { createStore } from './store.js'
 
 Vue.config.productionTip = false;
+
+const {store} = createStore();
 
 new Vue({
   router,

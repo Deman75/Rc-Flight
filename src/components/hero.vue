@@ -71,7 +71,7 @@ export default {
     document.removeEventListener("touchstart", this.mousemove);
   },
   methods: {
-    mousemove () { // Любое движение мыши на сайте обнуляет отсчет "бездействия" и видео не останавливается.
+    mousemove () { // Любое движение мыши на сайте обнуляет от счет "бездействия" и видео не останавливается.
       this.dateLastActive = Date.now();
       if (!this.playVideo) { // Если произашло событие а видео не "идет" то запускаем.
         this.playVideo = true;

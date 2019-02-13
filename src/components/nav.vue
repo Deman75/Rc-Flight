@@ -12,7 +12,7 @@ nav.nav(
     li.nav__item(@click="hamburgerButton('close')")
       router-link(to="/about").nav__link О нас
     li.nav__item(@click="hamburgerButton('close')")
-      .nav__link Где мы
+      router-link(to="/map").nav__link Где мы
     li.nav__item(@click="hamburgerButton('close')")
       .nav__link Контакты
     li.nav__item(@click="hamburgerButton('close')")
@@ -29,15 +29,22 @@ nav.nav(
 </template>
 
 <script>
-import { mapState } from 'vuex';
+
+import { mapState, mapActions } from 'vuex';
 
 export default {
   computed: {
     ...mapState('commons',[
         'touchDevice'
-    ])
+    ]),
+  },
+  mounted() {
+    this.navHeight();
   },
   methods: {
+    ...mapActions({
+      changeNavHeight: 'commons/changeNavHeight'
+    }),
     scroll (e) {
       if (this.touchDevice) {
         e.preventDefault();
@@ -59,6 +66,10 @@ export default {
       }
 
     },
+    navHeight() {
+      const nav = document.querySelector('.nav');
+      this.changeNavHeight(nav.offsetHeight);
+    },
   }
 }
 </script>
@@ -73,7 +84,7 @@ export default {
   justify-content: center;
   align-items: center;
   width: 100%;
-  z-index: 10;
+  z-index: 200;
 
   @include tablet {
     background-color: rgba(0, 0, 0, .8);
@@ -206,6 +217,7 @@ export default {
 
   .hamburger__icon-top, .hamburger__icon-bottom, .hamburger__icon-center {
     transition: transform .5s, fill .3s;
+    transform: none;
   }
   .hamburger__icon-top {
     transform-origin: top;
@@ -223,11 +235,9 @@ export default {
   }
   .hamburger__icon-top {
     transform: translateY(45%) rotate(45deg);
-    transform-origin: top;
   }
   .hamburger__icon-bottom {
     transform: translateY(-45%) rotate(-45deg);
-    transform-origin: bottom;
   }
 }
 </style>

@@ -1,7 +1,6 @@
 <template lang="pug">
 .about
-  .top-block
-    h2.title="Наша команда"
+  TopTitle(title="Наша команда" image="images/bg/about_bg.jpg")
   .about__wrap
     titleSection(
       :titleData="titleData"
@@ -26,11 +25,13 @@
 <script>
 import titleSection from "@/components/title-section.vue";
 import cards from "@/components/cards.vue";
+import TopTitle from '../components/TopTitle';
 
 export default {
   components: {
     titleSection,
-    cards
+    cards,
+    TopTitle,
   },
   data() {
     return {
@@ -60,50 +61,7 @@ export default {
   width: 95%;
   max-width: 1200px;
 }
-.top-block {
-  width: 100%;
-  height: 250px;
-  position: relative;
-  overflow: hidden;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 0;
 
-  &::after {
-    content: '';
-    position: absolute;
-    display: block;
-    background: url('../assets/images/about_bg.jpg') center center no-repeat;
-    background-size: cover;
-    top: -10%;
-    left: -10%;
-    right: -10%;
-    bottom: -10%;
-    z-index: -1;
-    filter: blur(3px) brightness(40%);
-  }
-
-  @include phone {
-    height: 150px;
-  }
-
-  @include phoneLand {
-    height: 130px;
-  }
-}
-
-.title {
-  font-size: 50px;
-
-  @include phone {
-    font-size: 30px;
-  }
-  @include phoneLand {
-    font-size: 30px;
-  }
-}
 .about__image {
   width: 100%;
   margin: 0 auto;

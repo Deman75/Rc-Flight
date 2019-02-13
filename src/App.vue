@@ -95,6 +95,7 @@ article, img {
   color: #2c3e50;
   font-weight: 400;
   width: 100%;
+  //height: 100%;
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -115,6 +116,14 @@ article, img {
     z-index: -100;
     filter: blur(3px) brightness(40%);
   }
+}
+.main-content {
+  width: 100%;
+  height: 100%;
+}
+.content {
+  height: 100%;
+  width: 100%;
 }
 
 </style>
