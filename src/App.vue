@@ -35,7 +35,6 @@ export default {
     }),
     touch(e) {
       if (this.touchDevice === false) {
-        console.log(e);
         this.deviceIsTouch(true);
       }
     },
@@ -56,6 +55,9 @@ body, html {
   font-size: 16px;
   color: #483949;
   line-height: 1.42;
+}
+body {
+  overflow: auto;
 }
 
 ul {
@@ -125,5 +127,7 @@ article, img {
   height: 100%;
   width: 100%;
 }
-
+.overflow_hidden {
+  overflow: hidden;
+}
 </style>

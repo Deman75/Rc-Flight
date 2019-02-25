@@ -89,6 +89,8 @@ export default {
   mounted() {
     const images = document.querySelectorAll('.image__img');
     const slides = this.slideshow[this.id];
+    document.querySelector('body').style = "overflow: hidden;"
+
 
     // Поочередная закрузка картинок для слйдшоу
     async function loadImage() {
@@ -116,21 +118,16 @@ export default {
       this.touchStart = true;
     },
     touchMoveFunc(e) {
+      const touchOffset = 50;
       if ( !this.touchAnimate ) {
-        if (e.touches[0].clientX > this.touchStartX && e.touches[0].clientX - this.touchStartX > 30) {
+        if (e.touches[0].clientX > this.touchStartX && e.touches[0].clientX - this.touchStartX > touchOffset) {
           // prev
           this.prevSlide();
           this.touchAnimate = true;
-          setTimeout(() => {
-            this.touchAnimate = false;
-          }, 500)
-        } else if (e.touches[0].clientX < this.touchStartX && this.touchStartX - e.touches[0].clientX > 30) {
+        } else if (e.touches[0].clientX < this.touchStartX && this.touchStartX - e.touches[0].clientX > touchOffset) {
           // next
           this.nextSlide();
           this.touchAnimate = true;
-          setTimeout(() => {
-            this.touchAnimate = false;
-          }, 500)
         }
       } else {
         e.preventDefault();
@@ -139,6 +136,7 @@ export default {
     },
     touchEndFunc() {
       this.touchStart = false;
+      this.touchAnimate = false;
     },
     mouseDownFunc(e) {
       e.preventDefault(); // Нужно для того чтобы не "таскать" за мышкой картинку.
@@ -265,6 +263,9 @@ export default {
     prevSlide() { // Кнопки слайдера
       this.moveToSlide(this.actualSlide - 1);
     }
+  },
+  beforeDestroy() {
+    document.querySelector('body').style = "overflow:";
   }
 }
 </script>
@@ -419,4 +420,5 @@ export default {
     }
   }
 }
+
 </style>

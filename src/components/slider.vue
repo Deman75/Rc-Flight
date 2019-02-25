@@ -100,21 +100,16 @@ export default {
       this.touchStart = true;
     },
     touchMoveFunc(e) {
+      const touchOffset = 50;
       if ( !this.touchAnimate ) {
-        if (e.touches[0].clientX > this.touchStartX && e.touches[0].clientX - this.touchStartX > 30) {
+        if (e.touches[0].clientX > this.touchStartX && e.touches[0].clientX - this.touchStartX > touchOffset) {
           // prev
           this.sliderButton(0);
           this.touchAnimate = true;
-          setTimeout(() => {
-            this.touchAnimate = false;
-          }, 500)
-        } else if (e.touches[0].clientX < this.touchStartX && this.touchStartX - e.touches[0].clientX > 30) {
+        } else if (e.touches[0].clientX < this.touchStartX && this.touchStartX - e.touches[0].clientX > touchOffset) {
           // next
           this.sliderButton(1);
           this.touchAnimate = true;
-          setTimeout(() => {
-            this.touchAnimate = false;
-          }, 500)
         }
       } else {
         e.preventDefault();
@@ -123,6 +118,7 @@ export default {
     },
     touchEndFunc() {
       this.touchStart = false;
+      this.touchAnimate = false;
     },
     resize(){
       const slider = document.querySelector('.slider__list');
